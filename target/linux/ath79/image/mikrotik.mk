@@ -23,6 +23,20 @@ define Device/mikrotik_routerboard-922uags-5hpacd
 endef
 TARGET_DEVICES += mikrotik_routerboard-922uags-5hpacd
 
+define Device/mikrotik_routerboard-962uigs-5hact2hnt
+  $(Device/mikrotik)
+  SOC := qca9558
+  DEVICE_MODEL := RouterBOARD 962UiGS-5HacT2HnT (hAP ac)
+  IMAGE_SIZE := 16256k
+  IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 -e | \
+	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | \
+	append-metadata | check-size
+  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct \
+	kmod-usb2 kmod-sfp kmod-i2c-gpio kmod-input-touchscreen-ads7846
+  SUPPORTED_DEVICES += rb-962uigs-5hact2hnt
+endef
+TARGET_DEVICES += mikrotik_routerboard-962uigs-5hact2hnt
+
 define Device/mikrotik_routerboard-wap-g-5hact2hnd
   $(Device/mikrotik)
   SOC := qca9556

@@ -1,0 +1,350 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+#include "qca955x.dtsi"
+
+/ {
+	compatible = "mikrotik,routerboard-962uigs-5hact2hnt", "qca,qca9558";
+	model = "MikroTik RouterBOARD 962UiGS-5HacT2HnT";
+
+	aliases {
+		led-boot = &led_pwr;
+		led-failsafe = &led_pwr;
+		led-upgrade = &led_pwr;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_sfp: sfp {
+			label = "routerboard-962uigs-5hact2hnt:white:sfp";
+			gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	ath10k-leds {
+		compatible = "gpio-leds";
+
+		led_pwr: pwr {
+			label = "routerboard-962uigs-5hact2hnt:green:pwr";
+			gpios = <&ath10k 0 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
+
+		wlan1 {
+			label = "routerboard-962uigs-5hact2hnt:green:wlan";
+			gpios = <&ath10k 1 GPIO_ACTIVE_LOW>;
+			/*linux,default-trigger = "phy0tpt";*/
+		};
+
+		wlan2 {
+			label = "routerboard-962uigs-5hact2hnt:red:wlan";
+			gpios = <&ath10k 2 GPIO_ACTIVE_LOW>;
+			/*linux,default-trigger = "phy0tpt";*/
+		};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
+			debounce-interval = <60>;
+		};
+	};
+
+	sfp_i2c: i2c {
+		compatible = "i2c-gpio";
+		sda-gpios = <&gpio 18 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&gpio 19 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <5>;
+		i2c-gpio,timeout-ms = <1>;
+	};
+
+	sfp1: sfp {
+		compatible = "sff,sfp";
+		maximum-power-milliwatt = <1000>;
+		i2c-bus = <&sfp_i2c>;
+		los-gpios = <&gpio 21 GPIO_ACTIVE_HIGH>;
+		mod-def0-gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
+		tx-disable-gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&pinmux {
+	pinmux_uart_in_pins {
+		pinctrl-single,bits = <0x18 (9 << 8) (9 << 8)>;
+		//0x18040044 UART_SIN(<<8) GPIO9
+	};
+
+	pinmux_uart_out_pins {
+		pinctrl-single,bits = <0x8 (22 << (8*2)) (22 << (8*2))>;
+		//0x18040034 GPIO10(<<16) UART0_SOUT(22)
+	};
+
+	pinmux_spi_cs2_pins {
+		pinctrl-single,bits = <0x8 (11 << (8*3)) (11 << (8*3))>;
+		//0x18040034 GPIO11(<<24) SPI_CS_2(11)
+	};
+};
+
+&gpio {
+	gpio-line-names =
+		"", "", "PoE out compat", "PoE out", //PoE out ACTIVE_LOW
+		"beeper", "SPI_CS_0", "SPI_CLK", "SPI_MOSI",
+		"SPI_DATA_IN", "UART_SIN", "UART0_SOUT", "SPI_CS_2",
+		"LED SFP", "USB power", "", "", //LED SFP ACTIVE_LOW
+		"SFP tx-disable", "SFP mod-def0", "i2c sda", "i2c scl", //SFP tx ACTIVE_LOW
+		"reset", "SFP LoS", "", ""; //reset ACTIVE_LOW
+
+	/* OEM firmware GPIOs
+	 * GPIO input 0..2, 8..9, 17, 20..23
+	 * GPIO output 3..7 10..16, 18, 19
+	 * GPIOs 9..11 need pinmux */
+
+	input-poe-out-compat {
+		gpio-hog;
+		gpios = <2 GPIO_ACTIVE_HIGH>;
+		input;
+		line-name = "PoE out compat";
+	};
+
+	enable-poe-out {
+		gpio-hog;
+		gpios = <3 GPIO_ACTIVE_LOW>;
+		output-low;
+		line-name = "PoE out power";
+	};
+
+	enable-usb-power {
+		gpio-hog;
+		gpios = <13 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "USB power";
+	};
+};
+
+&spi {
+	status = "okay";
+
+	compatible = "mikrotik,rb4xx-spi";
+
+	flash@1 {
+		compatible = "m25p80", "jedec,spi-nor";
+		reg = <1>;
+		//spi-max-frequency = <80000000>; //vendor
+		spi-max-frequency = <5000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "RouterBoot";
+				reg = <0x0 0x20000>;
+				compatible = "mikrotik,routerboot-partitions";
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				partition@0 {
+					label = "bootloader1";
+					reg = <0x0 0x0>;
+					read-only;
+				};
+
+				hard_config {
+					label = "hard_config";
+					read-only;
+				};
+
+				bios {
+					size = <0x1000>;
+					read-only;
+				};
+
+				partition@10000 {
+					label = "bootloader2";
+					reg = <0x10000 0x0>;
+					read-only;
+				};
+
+				soft_config {
+					label = "soft_config";
+				};
+			};
+
+			partition@20000 {
+				label = "firmware";
+				reg = <0x20000 0xfe0000>;
+				compatible = "mikrotik,minor";
+			};
+
+		};
+	};
+
+	//rb400_spi_misc@0 {
+	//	compatible = "mikrotik,rb4xx-spi";
+	//	reg = <0>; /* CS 0 */
+	//	spi-max-frequency = <33333334>;
+	//	spi-cpha = <1>; /* SPI_MODE_3 */
+	//	spi-cpol = <1>;
+
+	//	rb400_gpio: gpio {
+	//		compatible = "mikrotik,rb4xx-gpio";
+	//		gpio-controller;
+	//		#gpio-cells = <2>;
+	//	};
+	//};
+
+	//rb2011_spi_ts@2 {
+	//	reg = <2>; /* CS 2 */
+	//	spi-max-frequency = <2000000>;
+	//	spi-cpha = <1>; /* SPI_MODE_3 */
+	//	spi-cpol = <1>;
+	//	compatible = "zt2046q", "ti,ads7846";
+	//};
+};
+
+&uart {
+	status = "okay";
+};
+
+&wmac {
+	status = "okay";
+
+	qca,no-eeprom;
+};
+
+&pcie1 {
+	status = "okay";
+
+	ath10k: wifi@0,0 {
+		compatible = "qcom,ath10k";
+		reg = <0 0 0 0 0>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		gpio-line-names = "LED", "LED wifi green", "LED wifi red";
+	};
+};
+
+&usb0 {
+	status = "okay";
+};
+
+&usb_phy0 {
+	status = "okay";
+};
+
+&mdio0 {
+	status = "okay";
+
+	switch0@0 {
+		compatible = "qca,qca8337";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x0>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			switch0cpu: port@0 {
+				reg = <0>;
+				label = "cpu";
+				ethernet = <&eth0>;
+				phy-mode = "rgmii";
+				fixed-link {
+					speed = <1000>;
+					full-duplex;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				label = "wan";
+			};
+
+			port@2 {
+				reg = <2>;
+				label = "lan2";
+			};
+
+			port@3 {
+				reg = <3>;
+				label = "lan3";
+			};
+
+			port@4 {
+				reg = <4>;
+				label = "lan4";
+			};
+
+			port@5 {
+				reg = <5>;
+				label = "lan5";
+			};
+		};
+	};
+};
+
+/*
+&mdio0 {
+	status = "okay";
+
+	phy0: ethernet-phy@0 {
+		reg = <0>;
+		phy-mode = "rgmii";
+
+		qca,ar8327-initvals = <
+			0x04 (1<<26 | 1<<25 | 1<<22)
+			// PORT0_PAD_CTRL
+			// RGMII, TXCLK_DELAY_EN, TX_DELAY(1)
+			0x08 (1<<24)
+			// PORT5_PAD_CTRL
+			// RXCLK_DELAY_EN (all ports)
+			>;
+	};
+};
+*/
+
+&mdio1 {
+	status = "okay";
+
+	phy_sfp: ethernet-phy@0 {
+		reg = <0>;
+		phy-mode = "sgmii";
+		sfp = <&sfp1>;
+	};
+};
+
+&eth0 {
+	status = "okay";
+
+	phy-mode = "rgmii";
+	phy-handle = <&switch0cpu>;
+	/* vendor firmware has TX_DELAY 01  */
+	pll-data = <0x8f000000 0x00000101 0x00001616>;
+	/* pl1data gigabit from vendor firmware
+         * 100Mbps & 10Mbps match qca955x.dtsi */
+
+	fixed-link {
+		speed = <1000>;
+		full-duplex;
+	};
+};
+
+&eth1 {
+	status = "okay";
+
+	phy-mode = "sgmii";
+	phy-handle = <&phy_sfp>;
+	pll-data = <0x03000000 0x00000101 0x00001616>;
+	/* plldata gigabit from vendor firmware
+         * 100Mbps & 10Mbps match qca955x.dtsi */
+};

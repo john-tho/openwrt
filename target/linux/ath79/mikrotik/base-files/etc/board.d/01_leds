@@ -1,0 +1,18 @@
+#!/bin/sh
+
+. /lib/functions/uci-defaults.sh
+
+board_config_update
+
+board=$(board_name)
+boardname="${board##*,}"
+
+case "$board" in
+mikrotik,routerboard-962uigs-5hact2hnt)
+	ucidef_set_led_netdev "sfp" "SFP" "$boardname:white:sfp" "eth1"
+	;;
+esac
+
+board_config_flush
+
+exit 0
