@@ -53,3 +53,13 @@ define Device/mikrotik_routerboard-wap-g-5hact2hnd
   SUPPORTED_DEVICES += rb-wapg-5hact2hnd
 endef
 TARGET_DEVICES += mikrotik_routerboard-wap-g-5hact2hnd
+
+define Device/mikrotik_routerboard-omnitikg-5hacd
+  $(Device/mikrotik_nor)
+  SOC := qca9557
+  DEVICE_MODEL := RouterBOARD OmniTikG-5HacD (OmniTik 5 AC)
+  IMAGE_SIZE := 16256k
+  DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct \
+		     kmod-usb2
+endef
+TARGET_DEVICES += mikrotik_routerboard-omnitikg-5hacd
