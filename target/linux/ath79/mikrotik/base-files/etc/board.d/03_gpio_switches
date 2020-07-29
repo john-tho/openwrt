@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Copyright (C) 2018 OpenWrt.org
+#
+
+. /lib/functions/uci-defaults.sh
+
+board_config_update
+
+board=$(board_name)
+
+case "$board" in
+mikrotik,routerboard-962uigs-5hact2hnt)
+	ucidef_add_gpio_switch "usb_power" "USB power" "13" "1"
+	ucidef_add_gpio_switch "poe_passthrough" "PoE passthrough" "3" "1"
+	;;
+esac
+
+board_config_flush
+
+exit 0

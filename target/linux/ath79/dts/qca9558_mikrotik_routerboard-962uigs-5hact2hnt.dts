@@ -115,16 +115,12 @@
 	};
 
 	enable-poe-out {
-		gpio-hog;
 		gpios = <3 GPIO_ACTIVE_LOW>;
-		output-low;
 		line-name = "PoE out power";
 	};
 
 	enable-usb-power {
-		gpio-hog;
 		gpios = <13 GPIO_ACTIVE_HIGH>;
-		output-high;
 		line-name = "USB power";
 	};
 };
