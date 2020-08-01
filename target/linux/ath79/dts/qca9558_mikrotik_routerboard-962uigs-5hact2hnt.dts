@@ -72,7 +72,7 @@
 		i2c-bus = <&sfp_i2c>;
 		los-gpios = <&gpio 21 GPIO_ACTIVE_HIGH>;
 		mod-def0-gpios = <&gpio 17 GPIO_ACTIVE_LOW>;
-		tx-disable-gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
+		//tx-disable-gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
 	};
 };
 
@@ -343,4 +343,9 @@
 	pll-data = <0x03000000 0x00000101 0x00001616>;
 	/* plldata gigabit from vendor firmware
          * 100Mbps & 10Mbps match qca955x.dtsi */
+
+	fixed-link {
+		speed = <1000>;
+		full-duplex;
+	};
 };
