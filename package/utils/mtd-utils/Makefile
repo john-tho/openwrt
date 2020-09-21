@@ -55,6 +55,24 @@ define Package/nand-utils/description
   Utilities for NAND devices.
 endef
 
+define Package/mtdpart
+ $(call Package/mtd-utils/Default)
+  TITLE:=mtdpart
+endef
+
+define Package/mtdpart/description
+  Userspace tool for partitioning mtd devices
+endef
+
+define Package/mtd-utils-debug
+ $(call Package/mtd-utils/Default)
+  TITLE:=Utilities for mtd flash erase/read/write/test debug
+endef
+
+define Package/mtd-utils-debug/description
+  Utilities for MTD device debug.
+endef
+
 MAKE_FLAGS += LDLIBS+="$(LIBGCC_S)"
 
 CONFIGURE_ARGS += \
@@ -88,5 +106,19 @@ define Package/nand-utils/install
 	$(PKG_INSTALL_DIR)/usr/lib/mtd-utils/nandbiterrs $(1)/usr/sbin/
 endef
 
+define Package/mtd-utils-debug/install
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) \
+	$(PKG_INSTALL_DIR)/usr/sbin/mtd_debug $(1)/usr/sbin/
+endef
+
+define Package/mtdpart/install
+	$(INSTALL_DIR) $(1)/usr/sbin
+	$(INSTALL_BIN) \
+	$(PKG_INSTALL_DIR)/usr/sbin/mtdpart $(1)/usr/sbin/
+endef
+
 $(eval $(call BuildPackage,ubi-utils))
 $(eval $(call BuildPackage,nand-utils))
+$(eval $(call BuildPackage,mtd-utils-debug))
+$(eval $(call BuildPackage,mtdpart))
