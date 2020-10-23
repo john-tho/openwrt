@@ -25,6 +25,10 @@ Once this is done. Retry.
 EOF
 		return 1
 		;;
+	mikrotik,rb450gx4*)
+		nand_do_platform_check "$board_name" "$1"
+		mikrotik_check_nand_blocksize "$1"
+		;;
 	esac
 	return 0;
 }
@@ -116,6 +120,13 @@ platform_do_upgrade() {
 	mikrotik,sxtsq-5-ac)
 		[ "$(rootfs_type)" = "tmpfs" ] && mtd erase firmware
 		default_do_upgrade "$1"
+		;;
+	mikrotik,rb450gx4*)
+		CI_UBIKERNELPART=ubi_kernel
+		IGNORE_TAR_KERNEL=1
+		mikrotik_upgrade_nand_kernel "$1"
+		mikrotik_rm_nand_routeros
+		nand_do_upgrade "${1}"
 		;;
 	openmesh,a42 |\
 	openmesh,a62 |\
