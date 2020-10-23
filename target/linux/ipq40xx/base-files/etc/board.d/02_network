@@ -144,6 +144,13 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0t@eth0" "4:lan" "5:wan"
 		;;
+	mikrotik,rb450gx4)
+		# wan is referenced 2nd, so that this config matches
+		# swconfig reset (ar40xx + ess-switch bmp nodes)
+		# with WAN as VLAN 2
+		ucidef_add_switch "switch0" \
+			"0t@eth0" "2:lan" "3:lan" "4:lan" "5:lan" "1:wan"
+		;;
 	*)
 		echo "Unsupported hardware. Network interfaces not initialized"
 		;;
@@ -198,9 +205,10 @@ ipq40xx_setup_macs()
 		wan_mac=$(mtd_get_mac_ascii devinfo hw_mac_addr)
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
-	mikrotik,cap-ac |\
+	mikrotik,cap-ac|\
 	mikrotik,hap-ac2|\
 	mikrotik,hap-ac3|\
+	mikrotik,rb450gx4|\
 	mikrotik,rbwapg-5hacd2hnd)
 		wan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
 		lan_mac=$(macaddr_add $wan_mac 1)
