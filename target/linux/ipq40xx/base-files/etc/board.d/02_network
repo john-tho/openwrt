@@ -97,6 +97,11 @@ ipq40xx_setup_interfaces()
 	mikrotik,wap-r-ac)
 		ucidef_set_interface_lan "sw-eth1 sw-eth2"
 		;;
+	mikrotik,rb450gx4)
+		ucidef_set_bridge_device "br0"
+		ucidef_set_interface_wan "ether1"
+		ucidef_set_interface_lan "ether2 ether3 ether4 ether5"
+		;;
 	aruba,ap-303h|\
 	buffalo,wtr-m2133hp|\
 	ezviz,cs-w3-wd1200g-eup|\
