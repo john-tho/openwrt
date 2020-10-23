@@ -25,6 +25,11 @@ Once this is done. Retry.
 EOF
 		return 1
 		;;
+	mikrotik,rb450gx4*)
+		mikrotik_check_nand_blocksize "$1"
+		return $?
+		;;
+
 	zte,mf286d)
 		CI_UBIPART="rootfs"
 		local mtdnum="$( find_mtd_index $CI_UBIPART )"
@@ -176,7 +181,9 @@ platform_do_upgrade() {
 		[ "$(rootfs_type)" = "tmpfs" ] && mtd erase firmware
 		default_do_upgrade "$1"
 		;;
-	mikrotik,hap-ac3)
+	mikrotik,hap-ac3|\
+	mikrotik,rb450gx4*)
+		mikrotik_rm_nand_routeros && \
 		platform_do_upgrade_mikrotik_nand "$1"
 		;;
 	netgear,rbr50 |\
