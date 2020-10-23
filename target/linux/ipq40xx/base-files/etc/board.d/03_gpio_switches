@@ -31,6 +31,9 @@ zte,mf286d|\
 zte,mf289f)
 	ucidef_add_gpio_switch "power_btn_block" "Power button blocker" "421" "0"
 	;;
+mikrotik,rb450gx4)
+	ucidef_add_gpio_switch "poe_passthrough" "PoE Passthrough" "454" "0"
+	;;
 esac
 
 board_config_flush
