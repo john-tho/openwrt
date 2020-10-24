@@ -1,0 +1,201 @@
+From: Felix Fietkau <nbd@nbd.name>
+Date: Thu, 10 Dec 2020 14:27:22 +0100
+Subject: [PATCH] netfilter: flowtable: add offload support for xmit path
+ types
+
+When the flow tuple xmit_type is set to FLOW_OFFLOAD_XMIT_DIRECT, the dst_cache
+pointer is not valid, and the h_source/h_dest/ifidx out fields need to be used
+
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+
+--- a/net/netfilter/nf_flow_table_offload.c
++++ b/net/netfilter/nf_flow_table_offload.c
+@@ -178,25 +178,34 @@ static int flow_offload_eth_src(struct n
+ 	const struct flow_offload_tuple *tuple = &flow->tuplehash[!dir].tuple;
+ 	struct flow_action_entry *entry0 = flow_action_entry_next(flow_rule);
+ 	struct flow_action_entry *entry1 = flow_action_entry_next(flow_rule);
+-	struct net_device *dev;
++	const unsigned char *addr;
++	struct net_device *dev = NULL;
+ 	u32 mask, val;
+ 	u16 val16;
+ 
+-	dev = dev_get_by_index(net, tuple->iifidx);
+-	if (!dev)
+-		return -ENOENT;
++	if (flow->tuplehash[dir].tuple.xmit_type == FLOW_OFFLOAD_XMIT_DIRECT) {
++		addr = flow->tuplehash[dir].tuple.out.h_source;
++	} else {
++		dev = dev_get_by_index(net, tuple->iifidx);
++		if (!dev)
++			return -ENOENT;
++
++		addr = dev->dev_addr;
++	}
+ 
+ 	mask = ~0xffff0000;
+-	memcpy(&val16, dev->dev_addr, 2);
++	memcpy(&val16, addr, 2);
+ 	val = val16 << 16;
+ 	flow_offload_mangle(entry0, FLOW_ACT_MANGLE_HDR_TYPE_ETH, 4,
+ 			    &val, &mask);
+ 
+ 	mask = ~0xffffffff;
+-	memcpy(&val, dev->dev_addr + 2, 4);
++	memcpy(&val, addr + 2, 4);
+ 	flow_offload_mangle(entry1, FLOW_ACT_MANGLE_HDR_TYPE_ETH, 8,
+ 			    &val, &mask);
+-	dev_put(dev);
++
++	if (dev)
++		dev_put(dev);
+ 
+ 	return 0;
+ }
+@@ -216,19 +225,22 @@ static int flow_offload_eth_dst(struct n
+ 	u8 nud_state;
+ 	u16 val16;
+ 
+-	dst_cache = flow->tuplehash[dir].tuple.dst_cache;
+-	n = dst_neigh_lookup(dst_cache, daddr);
+-	if (!n)
+-		return -ENOENT;
+-
+-	read_lock_bh(&n->lock);
+-	nud_state = n->nud_state;
+-	ether_addr_copy(ha, n->ha);
+-	read_unlock_bh(&n->lock);
++	if (flow->tuplehash[dir].tuple.xmit_type == FLOW_OFFLOAD_XMIT_DIRECT) {
++		ether_addr_copy(ha, flow->tuplehash[dir].tuple.out.h_dest);
++	} else {
++		dst_cache = flow->tuplehash[dir].tuple.dst_cache;
++		n = dst_neigh_lookup(dst_cache, daddr);
++		if (!n)
++			return -ENOENT;
+ 
+-	if (!(nud_state & NUD_VALID)) {
++		read_lock_bh(&n->lock);
++		nud_state = n->nud_state;
++		ether_addr_copy(ha, n->ha);
++		read_unlock_bh(&n->lock);
+ 		neigh_release(n);
+-		return -ENOENT;
++
++		if (!(nud_state & NUD_VALID))
++			return -ENOENT;
+ 	}
+ 
+ 	mask = ~0xffffffff;
+@@ -241,7 +253,6 @@ static int flow_offload_eth_dst(struct n
+ 	val = val16;
+ 	flow_offload_mangle(entry1, FLOW_ACT_MANGLE_HDR_TYPE_ETH, 4,
+ 			    &val, &mask);
+-	neigh_release(n);
+ 
+ 	return 0;
+ }
+@@ -463,27 +474,44 @@ static void flow_offload_ipv4_checksum(s
+ 	}
+ }
+ 
+-static void flow_offload_redirect(const struct flow_offload *flow,
++static void flow_offload_redirect(struct net *net,
++				  const struct flow_offload *flow,
+ 				  enum flow_offload_tuple_dir dir,
+ 				  struct nf_flow_rule *flow_rule)
+ {
+-	struct flow_action_entry *entry = flow_action_entry_next(flow_rule);
++	const struct flow_offload_tuple *tuple = &flow->tuplehash[dir].tuple;
++	struct flow_action_entry *entry;
++	struct net_device *dev;
+ 	struct rtable *rt;
+ 
+-	rt = (struct rtable *)flow->tuplehash[dir].tuple.dst_cache;
++	if (tuple->xmit_type == FLOW_OFFLOAD_XMIT_DIRECT) {
++		dev = dev_get_by_index(net, tuple->out.ifidx);
++	} else {
++		rt = (struct rtable *)tuple->dst_cache;
++		dev = rt->dst.dev;
++		dev_hold(dev);
++	}
++
++	if (!dev)
++		return;
++
++	entry = flow_action_entry_next(flow_rule);
+ 	entry->id = FLOW_ACTION_REDIRECT;
+-	entry->dev = rt->dst.dev;
+-	dev_hold(rt->dst.dev);
++	entry->dev = dev;
+ }
+ 
+ static void flow_offload_encap_tunnel(const struct flow_offload *flow,
+ 				      enum flow_offload_tuple_dir dir,
+ 				      struct nf_flow_rule *flow_rule)
+ {
++	const struct flow_offload_tuple *tuple = &flow->tuplehash[dir].tuple;
+ 	struct flow_action_entry *entry;
+ 	struct dst_entry *dst;
+ 
+-	dst = flow->tuplehash[dir].tuple.dst_cache;
++	if (tuple->xmit_type == FLOW_OFFLOAD_XMIT_DIRECT)
++		return;
++
++	dst = tuple->dst_cache;
+ 	if (dst && dst->lwtstate) {
+ 		struct ip_tunnel_info *tun_info;
+ 
+@@ -500,10 +528,14 @@ static void flow_offload_decap_tunnel(co
+ 				      enum flow_offload_tuple_dir dir,
+ 				      struct nf_flow_rule *flow_rule)
+ {
++	const struct flow_offload_tuple *tuple = &flow->tuplehash[!dir].tuple;
+ 	struct flow_action_entry *entry;
+ 	struct dst_entry *dst;
+ 
+-	dst = flow->tuplehash[!dir].tuple.dst_cache;
++	if (tuple->xmit_type == FLOW_OFFLOAD_XMIT_DIRECT)
++		return;
++
++	dst = tuple->dst_cache;
+ 	if (dst && dst->lwtstate) {
+ 		struct ip_tunnel_info *tun_info;
+ 
+@@ -538,7 +570,7 @@ int nf_flow_rule_route_ipv4(struct net *
+ 	    test_bit(NF_FLOW_DNAT, &flow->flags))
+ 		flow_offload_ipv4_checksum(net, flow, flow_rule);
+ 
+-	flow_offload_redirect(flow, dir, flow_rule);
++	flow_offload_redirect(net, flow, dir, flow_rule);
+ 
+ 	return 0;
+ }
+@@ -564,7 +596,7 @@ int nf_flow_rule_route_ipv6(struct net *
+ 		flow_offload_port_dnat(net, flow, dir, flow_rule);
+ 	}
+ 
+-	flow_offload_redirect(flow, dir, flow_rule);
++	flow_offload_redirect(net, flow, dir, flow_rule);
+ 
+ 	return 0;
+ }
+@@ -581,7 +613,7 @@ nf_flow_offload_rule_alloc(struct net *n
+ 	const struct flow_offload *flow = offload->flow;
+ 	const struct flow_offload_tuple *tuple;
+ 	struct nf_flow_rule *flow_rule;
+-	struct dst_entry *other_dst;
++	struct dst_entry *other_dst = NULL;
+ 	int err = -ENOMEM;
+ 
+ 	flow_rule = kzalloc(sizeof(*flow_rule), GFP_KERNEL);
+@@ -597,7 +629,8 @@ nf_flow_offload_rule_alloc(struct net *n
+ 	flow_rule->rule->match.key = &flow_rule->match.key;
+ 
+ 	tuple = &flow->tuplehash[dir].tuple;
+-	other_dst = flow->tuplehash[!dir].tuple.dst_cache;
++	if (flow->tuplehash[!dir].tuple.xmit_type != FLOW_OFFLOAD_XMIT_DIRECT)
++		other_dst = flow->tuplehash[!dir].tuple.dst_cache;
+ 	err = nf_flow_rule_match(&flow_rule->match, tuple, other_dst);
+ 	if (err < 0)
+ 		goto err_flow_match;
