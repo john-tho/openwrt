@@ -975,6 +975,11 @@ define Device/glinet_gl-ar300m-common-nor
   DEVICE_PACKAGES := kmod-usb2
   IMAGE_SIZE := 16000k
   SUPPORTED_DEVICES += gl-ar300m
+  KERNEL_NAME := vmlinuz.bin
+  KERNEL := kernel-bin | append-dtb | \
+	    get-kernel-elf-information | uImage none
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | \
+		      get-kernel-elf-information | uImage none
 endef
 
 define Device/glinet_gl-ar300m-lite

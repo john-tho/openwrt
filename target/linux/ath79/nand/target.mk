@@ -1,5 +1,8 @@
 BOARDNAME := Generic devices with NAND flash
 
+KERNELNAME:=vmlinux vmlinuz vmlinuz.bin
+IMAGES_DIR:=../../..
+
 FEATURES += squashfs nand
 
 DEFAULT_PACKAGES += wpad-basic-wolfssl

@@ -90,6 +90,11 @@ define Device/glinet_gl-ar300m-common-nand
   IMAGE_SIZE := 16000k
   PAGESIZE := 2048
   VID_HDR_OFFSET := 2048
+  KERNEL_NAME := vmlinuz.bin
+  KERNEL := kernel-bin | append-dtb | \
+	    get-kernel-elf-information | uImage none
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | \
+		      get-kernel-elf-information | uImage none
 endef
 
 define Device/glinet_gl-ar300m-nand

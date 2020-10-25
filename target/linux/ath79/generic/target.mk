@@ -1,5 +1,7 @@
 BOARDNAME:=Generic
 FEATURES += squashfs
+KERNELNAME:=vmlinux vmlinuz vmlinuz.bin
+IMAGES_DIR:=../../..
 
 DEFAULT_PACKAGES += wpad-basic-wolfssl
 
