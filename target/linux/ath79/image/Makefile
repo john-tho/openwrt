@@ -5,6 +5,18 @@ KERNEL_LOADADDR = 0x80060000
 
 DEVICE_VARS += LOADER_FLASH_OFFS LOADER_TYPE
 
+define Build/get-kernel-elf-information
+	$(eval $@ : KERNEL_FILE_ELF ?= $(subst .bin,,$<))
+
+	$(eval $@ : ZLOADADDR := $(filter-out Entry point address:, \
+				   $(shell readelf -h $(KERNEL_FILE_ELF) | \
+				     grep Entry)))
+	$(eval $(if $(filter-out 0, $(.SHELLSTATUS)), \
+		 $(error readelf failed with return: $(.SHELLSTATUS))))
+	$(eval $@ : KERNEL_LOADADDR := $(ZLOADADDR))
+	$(eval $@ : KERNEL_ENTRY := $(ZLOADADDR))
+endef
+
 define Build/loader-common
 	rm -rf $@.src
 	$(MAKE) -C lzma-loader \
