@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 /* Copyright (c) 2020, Robert Marko <robimarko@gmail.com> */
 
-#include "qcom-ipq4019.dtsi"
-#include <dt-bindings/gpio/gpio.h>
+#include "qcom-ipq4018-mikrotik_nor.dtsi"
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/soc/qcom,tcsr.h>
 
@@ -158,58 +157,6 @@
 
 &blsp_dma {
 	status = "okay";
-};
-
-&blsp1_spi1 {
-	status = "okay";
-
-	pinctrl-0 = <&spi_0_pins>;
-	pinctrl-names = "default";
-	cs-gpios = <&tlmm 54 GPIO_ACTIVE_HIGH>;
-
-	flash@0 {
-		reg = <0>;
-		compatible = "jedec,spi-nor";
-		spi-max-frequency = <40000000>;
-
-		partitions {
-			compatible = "fixed-partitions";
-			#address-cells = <1>;
-			#size-cells = <1>;
-
-			partition@0 {
-				label = "Qualcomm";
-				reg = <0x0 0x80000>;
-				read-only;
-			};
-
-			partition@80000 {
-				compatible = "mikrotik,routerboot-partitions";
-				#address-cells = <1>;
-				#size-cells = <1>;
-				label = "RouterBoot";
-				reg = <0x80000 0x80000>;
-				read-only;
-
-				hard_config {
-					read-only;
-				};
-
-				dtb_config {
-					read-only;
-				};
-
-				soft_config {
-				};
-			};
-
-			partition@100000 {
-				compatible = "mikrotik,minor";
-				label = "firmware";
-				reg = <0x100000 0xf00000>;
-			};
-		};
-	};
 };
 
 &blsp1_uart1 {
