@@ -45,6 +45,14 @@ engenius,ens620ext)
 	ucidef_set_led_netdev "lan1" "LAN1" "green:lan1" "eth0"
 	ucidef_set_led_netdev "lan2" "LAN2" "green:lan2" "eth1"
 	;;
+mikrotik,cap-ac)
+	ucidef_set_led_default "power" "POWER" "blue:power" "1"
+	ucidef_set_led_default "user" "USER" "green:user" "0"
+	ucidef_set_led_switch "eth1" "ETH1" "green:eth1" "switch0" "0x20"
+	ucidef_set_led_switch "eth2" "ETH2" "green:eth2" "switch0" "0x10"
+	ucidef_set_led_wlan "wlan2g" "WLAN2G" "green:wlan2g" "phy0tpt"
+	ucidef_set_led_wlan "wlan5g" "WLAN5G" "green:wlan5g" "phy1tpt"
+	;;
 mikrotik,sxtsq-5-ac)
 	ucidef_set_rssimon "wlan0" "200000" "1"
 	ucidef_set_led_rssi "rssilow" "rssilow" "green:rssilow" "wlan0" "1" "100"
