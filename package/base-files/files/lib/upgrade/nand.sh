@@ -12,6 +12,9 @@ CI_UBIPART="${CI_UBIPART:-ubi}"
 # 'rootfs' UBI volume on NAND contains the rootfs
 CI_ROOTPART="${CI_ROOTPART:-rootfs}"
 
+# do not install kernel from upgrade_tar
+IGNORE_TAR_KERNEL="${IGNORE_TAR_KERNEL:-0}"
+
 ubi_mknod() {
 	local dir="$1"
 	local dev="/dev/$(basename $dir)"
@@ -278,7 +281,9 @@ nand_upgrade_tar() {
 	local board_dir=$(tar tf "$tar_file" | grep -m 1 '^sysupgrade-.*/$')
 	board_dir=${board_dir%/}
 
-	kernel_length=$( (tar xf "$tar_file" ${board_dir}/kernel -O | wc -c) 2> /dev/null)
+	local kernel_length=0
+	[ "$IGNORE_TAR_KERNEL" = "0" ] && kernel_length=$( \
+		(tar xf "$tar_file" ${board_dir}/kernel -O | wc -c) 2> /dev/null)
 	local has_rootfs=0
 	local rootfs_length
 	local rootfs_type
