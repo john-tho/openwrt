@@ -785,6 +785,20 @@ endef
 
 $(eval $(call KernelPackage,mtdram))
 
+define KernelPackage/nandsim
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=NAND simulator
+  KCONFIG:=CONFIG_MTD_NAND_NANDSIM
+  FILES:=\
+	$(LINUX_DIR)/drivers/mtd/nand/raw/nandsim.ko
+endef
+
+define KernelPackage/nandsim/description
+ Kernel module for virtual NAND simulator
+endef
+
+$(eval $(call KernelPackage,nandsim))
+
 
 define KernelPackage/serial-8250
   SUBMENU:=$(OTHER_MENU)
