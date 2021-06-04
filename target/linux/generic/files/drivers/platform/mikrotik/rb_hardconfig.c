@@ -38,6 +38,7 @@
 #include <linux/lzo.h>
 
 #include "routerboot.h"
+#include "rb_macaddrs.h"
 
 #define RB_HARDCONFIG_VER		"0.06"
 #define RB_HC_PR_PFX			"[rb_hardconfig] "
@@ -685,6 +686,9 @@ int __init rb_hardconfig_init(struct kobject *rb_kobj)
 	void *outbuf;
 	int i, j, ret;
 	u32 magic;
+	struct device_node *hc_of_node;
+	u8 *base_macaddr;
+	u32 macaddr_count = 0;
 
 	hc_buf = NULL;
 	hc_kobj = NULL;
@@ -694,6 +698,10 @@ int __init rb_hardconfig_init(struct kobject *rb_kobj)
 	mtd = get_mtd_device_nm(RB_MTD_HARD_CONFIG);
 	if (IS_ERR(mtd))
 		return -ENODEV;
+
+	hc_of_node = mtd_get_of_node(mtd);
+	if (!hc_of_node)
+		pr_warn("failed to find hard_config DT node");
 
 	hc_buflen = mtd->size;
 	hc_buf = kmalloc(hc_buflen, GFP_KERNEL);
@@ -802,6 +810,22 @@ int __init rb_hardconfig_init(struct kobject *rb_kobj)
 		/* All other tags are published via standard attributes */
 		else {
 			ret = sysfs_create_file(hc_kobj, &hc_attrs[i].kattr.attr);
+			if (( RB_ID_MAC_ADDRESS_COUNT == hc_attrs[i].tag_id) && hc_attrs[i].pld_len) {
+				pr_debug("rb_macaddrs: hc_mac_count offset: 0x%x\n", hc_attrs[i].pld_ofs);
+
+				if (hc_attrs[i].pld_len != sizeof(macaddr_count))
+					pr_warn("rb_macaddrs: hc_mac_count wrong tag length\n");
+				else
+					macaddr_count = *(u32*)(buf + hc_attrs[i].pld_ofs - 4);
+				pr_debug("rb_macaddrs: hc_mac_count: 0x%x\n", macaddr_count);
+			} else if (( RB_ID_MAC_ADDRESS_PACK == hc_attrs[i].tag_id) && hc_attrs[i].pld_len) {
+				pr_debug("rb_macaddrs: hc_base_mac offset: 0x%x\n", hc_attrs[i].pld_ofs);
+				if (hc_attrs[i].pld_len != 8)
+					pr_warn("rb_macaddrs: hc_base_mac wrong tag length\n");
+				else
+					base_macaddr = (u8*)(buf + hc_attrs[i].pld_ofs - 4);
+			}
+
 			if (ret)
 				pr_warn(RB_HC_PR_PFX "Could not create %s sysfs entry (%d)\n",
 				       hc_attrs[i].kattr.attr.name, ret);
@@ -810,6 +834,8 @@ int __init rb_hardconfig_init(struct kobject *rb_kobj)
 
 	pr_info("MikroTik RouterBOARD hardware configuration sysfs driver v" RB_HARDCONFIG_VER "\n");
 
+	set_macaddrs(base_macaddr, macaddr_count, hc_of_node);
+	of_node_put(hc_of_node);
 	return 0;
 
 fail:
