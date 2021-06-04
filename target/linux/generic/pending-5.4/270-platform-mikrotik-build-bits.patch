@@ -11,7 +11,7 @@ This patch adds platform/mikrotik kernel build bits
 Signed-off-by: Thibaut VARÈNE <hacks@slashdirt.org>
 ---
  drivers/platform/Kconfig  | 2 ++
- drivers/platform/Makefile | 1 +
+ drivers/Makefile | 1 +
  2 files changed, 3 insertions(+)
 
 --- a/drivers/platform/Kconfig
@@ -22,10 +22,14 @@ Signed-off-by: Thibaut VARÈNE <hacks@slashdirt.org>
  source "drivers/platform/olpc/Kconfig"
 +
 +source "drivers/platform/mikrotik/Kconfig"
---- a/drivers/platform/Makefile
-+++ b/drivers/platform/Makefile
-@@ -9,3 +9,4 @@ obj-$(CONFIG_MIPS)		+= mips/
- obj-$(CONFIG_OLPC_EC)		+= olpc/
- obj-$(CONFIG_GOLDFISH)		+= goldfish/
- obj-$(CONFIG_CHROME_PLATFORMS)	+= chrome/
-+obj-$(CONFIG_MIKROTIK)		+= mikrotik/
+--- a/drivers/Makefile
++++ a/drivers/Makefile
+@@ -85,6 +85,8 @@
+ obj-$(CONFIG_SPMI)		+= spmi/
+ obj-$(CONFIG_HSI)		+= hsi/
+ obj-$(CONFIG_SLIMBUS)		+= slimbus/
++# link platform/mikrotik before net, so that mac-address can be set
++obj-$(CONFIG_MIKROTIK_RB_SYSFS)	+= platform/mikrotik/
+ obj-y				+= net/
+ obj-$(CONFIG_ATM)		+= atm/
+ obj-$(CONFIG_FUSION)		+= message/
