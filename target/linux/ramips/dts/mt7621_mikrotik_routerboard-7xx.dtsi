@@ -40,27 +40,27 @@
 
 &switch0 {
 	ports {
-		port@0 {
+		port0: port@0 {
 			status = "okay";
 			label = "wan";
 		};
 
-		port@1 {
+		port1: port@1 {
 			status = "okay";
 			label = "lan2";
 		};
 
-		port@2 {
+		port2: port@2 {
 			status = "okay";
 			label = "lan3";
 		};
 
-		port@3 {
+		port3: port@3 {
 			status = "okay";
 			label = "lan4";
 		};
 
-		port@4 {
+		port4: port@4 {
 			status = "okay";
 			label = "lan5";
 		};
@@ -69,4 +69,36 @@
 
 &sdhci {
 	status = "okay";
+};
+
+&hard_config {
+	mac_address_assignments: mac-address-assignments {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		mac-address@0 {
+			reg = <0>;
+			assign-to = <&gmac0 &port0>;
+		};
+
+		mac-address@1 {
+			reg = <1>;
+			assign-to = <&port1>;
+		};
+
+		mac-address@2 {
+			reg = <2>;
+			assign-to = <&port2>;
+		};
+
+		mac-address@3 {
+			reg = <3>;
+			assign-to = <&port3>;
+		};
+
+		mac-address@4 {
+			reg = <4>;
+			assign-to = <&port4>;
+		};
+	};
 };
