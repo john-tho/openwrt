@@ -71,3 +71,11 @@
 		function = "gpio";
 	};
 };
+
+&gpio {
+	gpio-line-names = "", "", "", "",
+			"", "", "SFP LoS", "extcon port5 PoE compat",
+			"SFP module def0", "LED blue SFP", "SFP tx disable", "",
+			"switch USB power", "mode", "", "buzzer",
+			"LED blue pwr", "switch port5 PoE out", "reset";
+};
