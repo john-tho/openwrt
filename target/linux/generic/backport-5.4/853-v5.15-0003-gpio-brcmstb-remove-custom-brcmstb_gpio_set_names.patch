@@ -1,0 +1,30 @@
+From e5de9d283a36a2923f7f309050b8c51b14753c3a Mon Sep 17 00:00:00 2001
+From: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date: Wed, 28 Jul 2021 06:12:53 +0200
+Subject: [PATCH 3/3] gpio: brcmstb: remove custom 'brcmstb_gpio_set_names'
+
+Gpiolib core code has been updated to support setting friendly names
+through properly 'gpio-line-names'. Instead of redefine behaviour here
+to skip the core to be executed, just properly assign the desired offset
+per bank to get in the core the expected behaviour.
+
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Gregory Fong <gregory.0xf0@gmail.com>
+Signed-off-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+---
+ drivers/gpio/gpio-brcmstb.c | 45 +------------------------------------
+ 1 file changed, 1 insertion(+), 44 deletions(-)
+
+diff --git a/drivers/gpio/gpio-brcmstb.c b/drivers/gpio/gpio-brcmstb.c
+index 05e3f99ae59c..a7275159052e 100644
+--- a/drivers/gpio/gpio-brcmstb.c
++++ b/drivers/gpio/gpio-brcmstb.c
+@@ -716,6 +716,7 @@ static int brcmstb_gpio_probe(struct platform_device *pdev)
+ 		gc->of_xlate = brcmstb_gpio_of_xlate;
+ 		/* not all ngpio lines are valid, will use bank width later */
+ 		gc->ngpio = MAX_GPIO_PER_BANK;
++		gc->offset = bank->id * MAX_GPIO_PER_BANK;
+ 		if (priv->parent_irq > 0)
+ 			gc->to_irq = brcmstb_gpio_to_irq;
+ 
