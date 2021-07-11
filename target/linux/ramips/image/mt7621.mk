@@ -2150,7 +2150,7 @@ define Device/MikroTik
   $(Device/dsa-migration)
   DEVICE_VENDOR := MikroTik
   IMAGE_SIZE := 16128k
-  DEVICE_PACKAGES := kmod-usb3 -uboot-envtools
+  DEVICE_PACKAGES := kmod-usb3 -uboot-envtools kmod-input-touchscreen-ads7846
   KERNEL_NAME := vmlinuz
   KERNEL := kernel-bin | append-dtb-elf
   LOADER_TYPE := elf

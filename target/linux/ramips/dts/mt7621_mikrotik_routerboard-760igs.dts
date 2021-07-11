@@ -79,3 +79,17 @@
 			"switch USB power", "mode", "", "buzzer",
 			"LED blue pwr", "switch port5 PoE out", "reset";
 };
+
+&spi0 {
+       /* touchscreen controller used only for voltage & temperature monitoring */
+       zt2046q@1 {
+               reg = <1>;      /* CS1 */
+               compatible = "zt2046q", "ti,ads7846";
+               spi-max-frequency = <1000000>;
+               interrupt-parent = <&gpio>;
+               /* unknown / unneeded, picked a presumed-unused gpio */
+               interrupts = <31 IRQ_TYPE_NONE>;
+               /* unknown / unneeded, picked a presumed-unused gpio */
+               pendown-gpio = <&gpio 30 0>;
+       };
+};
