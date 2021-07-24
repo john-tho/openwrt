@@ -240,6 +240,16 @@
 	/delete-node/ partition@100000;
 };
 
+&hard_config {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_hard_config_10: macaddr@10 {
+		reg = <0x10 0x6>;
+	};
+};
+
 &nand {
 	status = "okay";
 
@@ -282,6 +292,10 @@
 	/* set edma_axi.c LAN VLAN ports */
 	/* LAN uses switch physical port 2 through 5 */
 	vlan_tag = <1 (1<<2|1<<3|1<<4|1<<5)>;
+
+	nvmem-cells = <&macaddr_hard_config_10>;
+	nvmem-cell-names = "mac-address";
+	mac-address-increment = <1>;
 };
 
 &gmac1 {
@@ -290,4 +304,7 @@
 	/* set edma_axi.c WAN VLAN port */
 	/* WAN uses switch physical port 1 */
 	vlan_tag = <2 (1<<1)>;
+
+	nvmem-cells = <&macaddr_hard_config_10>;
+	nvmem-cell-names = "mac-address";
 };
