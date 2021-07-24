@@ -95,7 +95,7 @@ define Device/mikrotik_rb450gx4
 	SOC := qcom-ipq4019
 	DEVICE_DTS := qcom-ipq4019-rb450gx4
 	DEVICE_PACKAGES := -kmod-ath10k-ct -ath10k-firmware-qca4019-ct \
-		-wpad-basic-wolfssl
+		-wpad-basic-wolfssl kmod-input-touchscreen-ads7846
 endef
 
 define Device/mikrotik_rb450gx4-128k
