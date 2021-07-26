@@ -16,6 +16,7 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
+		bootargs="dyndbg=\"file routerboot_cfgtag_parser.c +pf\"";
 	};
 
 	aliases {
