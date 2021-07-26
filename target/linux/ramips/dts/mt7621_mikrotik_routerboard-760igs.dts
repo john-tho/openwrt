@@ -50,6 +50,10 @@
 
 	label = "sfp";
 	phy-handle = <&ephy7>;
+
+	nvmem-cells = <&macaddr_hard_config>;
+	nvmem-cell-names = "mac-address";
+	mac-address-increment = <5>;
 };
 
 &i2c {

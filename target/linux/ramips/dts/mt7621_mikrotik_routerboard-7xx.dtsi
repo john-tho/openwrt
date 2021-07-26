@@ -43,30 +43,66 @@
 		port@0 {
 			status = "okay";
 			label = "wan";
+
+			nvmem-cells = <&macaddr_hard_config>;
+			nvmem-cell-names = "mac-address";
 		};
 
 		port@1 {
 			status = "okay";
 			label = "lan2";
+
+			nvmem-cells = <&macaddr_hard_config>;
+			nvmem-cell-names = "mac-address";
+			mac-address-increment = <1>;
 		};
 
 		port@2 {
 			status = "okay";
 			label = "lan3";
+
+			nvmem-cells = <&macaddr_hard_config>;
+			nvmem-cell-names = "mac-address";
+			mac-address-increment = <2>;
 		};
 
 		port@3 {
 			status = "okay";
 			label = "lan4";
+
+			nvmem-cells = <&macaddr_hard_config>;
+			nvmem-cell-names = "mac-address";
+			mac-address-increment = <3>;
 		};
 
 		port@4 {
 			status = "okay";
 			label = "lan5";
+
+			nvmem-cells = <&macaddr_hard_config>;
+			nvmem-cell-names = "mac-address";
+			mac-address-increment = <4>;
 		};
 	};
 };
 
 &sdhci {
 	status = "okay";
+};
+
+&hard_config {
+	compatible = "mikrotik,routerboot-cfgtag-partitions";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	partition@4 {
+		compatible = "nvmem-cells";
+		reg = <4 6>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		macaddr_hard_config: macaddr@0 {
+			reg = <0x0 0x6>;
+		};
+	};
 };
