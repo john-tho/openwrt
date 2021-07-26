@@ -1,0 +1,21 @@
+--- a/drivers/mtd/parsers/Kconfig
++++ b/drivers/mtd/parsers/Kconfig
+@@ -204,3 +204,11 @@
+ 	 flash, some of which are fixed and some of which are located at
+ 	 variable offsets. This parser handles both cases via properly
+ 	 formatted DTS.
++
++config MTD_ROUTERBOOT_CFGTAGS_PARTS
++	tristate "RouterBoot flash cfgtag parser"
++	default n
++	depends on MTD && OF
++	help
++	 MikroTik RouterBoot has board config data stored on SPI-NOR.
++	 This parser exposes each config data tag as an MTD partition.
+--- a/drivers/mtd/parsers/Makefile
++++ b/drivers/mtd/parsers/Makefile
+@@ -14,3 +14,4 @@
+ obj-$(CONFIG_MTD_SHARPSL_PARTS)		+= sharpslpart.o
+ obj-$(CONFIG_MTD_REDBOOT_PARTS)		+= redboot.o
+ obj-$(CONFIG_MTD_ROUTERBOOT_PARTS)		+= routerbootpart.o
++obj-$(CONFIG_MTD_ROUTERBOOT_CFGTAGS_PARTS)	+= routerboot_cfgtag_parser.o

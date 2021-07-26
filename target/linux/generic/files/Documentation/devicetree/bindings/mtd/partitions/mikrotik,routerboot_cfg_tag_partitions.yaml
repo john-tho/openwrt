@@ -1,0 +1,80 @@
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright 2021 John Thomson
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/mtd/partitions/mikrotik,routerboot-cfgtag-partitions.yaml
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: Mikrotik RouterBoot config tag partitioning
+
+description: |
+  Mikrotik RouterBoot has board config stored on SPI-NOR.
+  These config tags start with the magic of Soft or Hard (stored CPU-endian),
+  at an offset % 4k = 0. Soft config has an additional CRC32 value.
+  Tags have a u32 header, with the u16 tag identifier the high bytes,
+  and the tag length the low. Tag data follows each tag header. The next tag
+  header follows the previous tag data.
+
+  This binding allows rbcfgtags to be exported as MTD partitions,
+  allowing a simple means of associating an nvmem-cell to a tag ID value.
+  Example: tag ID 4 contains the base macaddress.
+
+maintainers:
+  - John Thomson <git@johnthomson.fastmail.com.au>
+
+properties:
+  compatible:
+    const: mikrotik,routerboot-cfgtag-partitions
+
+  "#address-cells": true
+
+  "#size-cells": true
+
+  mikrotik,rbcfg-all-tags:
+    description: |
+      Expose a partition for ever all tags, otherwise only tags IDs which
+      have a matching child node are exposed.
+    type: boolean
+
+patternProperties:
+  "[a-z_0-9]+@[0-9a-f]+$":
+    description: |
+      child node describing an rbcfg tag
+    type: object
+    properties:
+      reg:
+        description: the rbcfgtag's ID and size. size 0 uses rbcfg tag size,
+          otherwise specifies the MTD partition size for this tag.
+        maxItems: 1
+
+required:
+  - compatible
+  - "#address-cells"
+  - "#size-cells"
+
+examples:
+  - |
+  &hard_config {
+    compatible = "mikrotik,routerboot-cfgtag-partitions";
+
+    #address-cells = <1>;
+    #size-cells = <1>;
+
+    partition@4 {
+      compatible = "nvmem-cells";
+      reg = <4 6>;
+
+      #address-cells = <1>;
+      #size-cells = <1>;
+
+      macaddr_hard_config: macaddr@0 {
+        reg = <0x0 0x6>;
+      };
+    };
+  };
+
+  &gmac1 {
+     nvmem-cells = <&macaddr_hard_config>;
+     nvmem-cell-names = "mac-address";
+     mac-address-increment = <1>;
+  };
