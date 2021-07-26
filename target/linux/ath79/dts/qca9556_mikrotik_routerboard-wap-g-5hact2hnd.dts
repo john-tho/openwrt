@@ -52,6 +52,9 @@
 
 	qca955x-sgmii-fixup;
 
+	nvmem-cells = <&macaddr_hard_config>;
+	nvmem-cell-names = "mac-address";
+
 	gmac-config {
 		device = <&gmac>;
 	};
@@ -117,6 +120,10 @@
 	status = "okay";
 
 	qca,no-eeprom;
+
+	nvmem-cells = <&macaddr_hard_config>;
+	nvmem-cell-names = "mac-address";
+	mac-address-increment = <1>;
 };
 
 &pcie0 {
@@ -125,5 +132,26 @@
 	wifi@0,0 {
 		compatible = "qcom,ath10k";
 		reg = <0 0 0 0 0>;
+
+		nvmem-cells = <&macaddr_hard_config>;
+		nvmem-cell-names = "mac-address";
+		mac-address-increment = <2>;
+	};
+};
+
+&hard_config {
+	compatible = "mikrotik,routerboot-cfgtag-partitions";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	partition@4 {
+		compatible = "nvmem-cells";
+		reg = <4 6>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		macaddr_hard_config: macaddr@0 {
+			reg = <0x0 0x6>;
+		};
 	};
 };
