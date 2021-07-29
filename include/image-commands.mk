@@ -42,6 +42,10 @@ define Build/append-image-stage
 endef
 endif
 
+define Build/append-initrd-elf
+	$(TARGET_CROSS)objcopy \
+		--add-section initrd=$(KERNEL_BUILD_DIR)/initrd.cpio$(strip $(call Build/initrd_compression)) $@
+endef
 
 compat_version=$(if $(DEVICE_COMPAT_VERSION),$(DEVICE_COMPAT_VERSION),1.0)
 json_quote=$(subst ','\'',$(subst ",\",$(1)))

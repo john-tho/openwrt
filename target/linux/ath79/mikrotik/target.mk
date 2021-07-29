@@ -1,5 +1,5 @@
 BOARDNAME := MikroTik devices
-FEATURES += minor nand
+FEATURES += minor nand separate_ramdisk
 KERNELNAME := vmlinux vmlinuz
 IMAGES_DIR := ../../..
 

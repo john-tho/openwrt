@@ -1,0 +1,149 @@
+--- a/arch/mips/ath79/setup.c
++++ b/arch/mips/ath79/setup.c
+@@ -18,6 +18,7 @@
+ #include <linux/clk-provider.h>
+ #include <linux/of_fdt.h>
+ #include <linux/irqchip.h>
++#include <linux/initrd.h>
+
+ #include <asm/bootinfo.h>
+ #include <asm/idle.h>
+@@ -215,6 +217,29 @@
+ {
+ 	unsigned long fdt_start;
+ 
++	if (IS_ENABLED(CONFIG_BLK_DEV_INITRD) && IS_ENABLED(CONFIG_INITRD_ROUTERBOOT)) {
++		u32 *initrd_header;
++		extern char __appended_dtb[];
++
++		pr_info("parse routerboot initrd location\n");
++		/* for self-extracting vmlinuz kernel */
++		if (IS_ENABLED(CONFIG_MIPS_RAW_APPENDED_DTB)) {
++			/* must match offset in decompress.c */
++			initrd_header = __va(PAGE_ALIGN(__pa_symbol(&__appended_dtb) + 0x100000 + 0x100000 + 8)) - 8;
++		/* for ELF vmlinux kernel */
++		} else if (IS_ENABLED(CONFIG_MIPS_ELF_APPENDED_DTB)) {
++			initrd_header = __va(PAGE_ALIGN(__pa_symbol(&_end) + 8)) - 8;
++		}
++		pr_info("rb initrd: header 0x%x at 0x%px\n", initrd_header[0], &initrd_header);
++		if (initrd_header && initrd_header[0] == 0x494E5244) {
++			initrd_start = (unsigned long) (initrd_header + 2);
++			initrd_end = initrd_start + initrd_header[1];
++			pr_info("rb initrd start 0x%lx end 0x%lx\n", initrd_start, initrd_end);
++		} else {
++			pr_info("rb initrd header no match\n");
++		}
++	}
++
+ 	set_io_port_base(KSEG1);
+ 
+ 	/* Get the position of the FDT passed by the bootloader */
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1282,6 +1282,13 @@
+ 
+ if BLK_DEV_INITRD
+ 
++config INITRD_ROUTERBOOT
++	bool "Parse initrd bounds from RouterBoot"
++	depends on BLK_DEV_INITRD
++	help
++	  RouterBoot can provide the initrd_start, and initrd_end via memory
++	  detailed in plat_mem_setup in ROS GPL dump arch/mips/rb/prom.c
++
+ source "usr/Kconfig"
+ 
+ endif
+
+--- a/arch/mips/boot/compressed/decompress.c
++++ b/arch/mips/boot/compressed/decompress.c
+@@ -13,9 +13,12 @@
+ #include <linux/kernel.h>
+ #include <linux/string.h>
+ #include <linux/libfdt.h>
++#include <linux/mm.h>
+ 
+ #include <asm/addrspace.h>
+ #include <asm/unaligned.h>
++#include <asm/page.h>
++
+ 
+ /*
+  * These two variables specify the free mem region
+@@ -37,6 +40,7 @@
+ #endif
+ 
+ extern char __appended_dtb[];
++extern char _end[];
+ 
+ void error(char *x)
+ {
+@@ -90,6 +94,41 @@
+ {
+ 	unsigned long zimage_start, zimage_size;
+ 
++#if defined(CONFIG_BLK_DEV_INITRD) && defined(CONFIG_INITRD_ROUTERBOOT)
++	u32 *initrd_header;
++	u32 initrd_start, initrd_size, initrd_end, initrd_dest;
++
++	puts("parse routerboot initrd location\n");
++
++	initrd_header = __va(PAGE_ALIGN(__pa_symbol(&_end) + 8)) - 8;
++
++	puts("rb initrd: header 0x");
++	puthex(initrd_header[0]);
++	puts(" at 0x");
++	puthex((unsigned long)initrd_header);
++	puts("\n");
++	if (initrd_header[0] == 0x494E5244) {
++		initrd_start = (unsigned long) (initrd_header + 2);
++		initrd_size = initrd_header[1];
++		initrd_end = initrd_start + initrd_header[1];
++		puts("rb initrd: start 0x");
++		puthex(initrd_start);
++		puts(" size 0x");
++		puthex(initrd_header[1]);
++		puts(" end 0x");
++		puthex(initrd_end);
++		puts("\n");
++		puts("rb initrd: MAGIC 0x");
++		puthex(*(u32 *)initrd_start);
++		puts("\n");
++	} else {
++		puts("rb initrd header no match\n");
++	}
++
++#else
++	puts("will not parse routerboot initrd location\n");
++#endif /* defined(CONFIG_INITRD_ROUTERBOOT) && defined(CONFIG_BLK_DEV_INITRD) */
++
+ 	zimage_start = (unsigned long)(&__image_begin);
+ 	zimage_size = (unsigned long)(&__image_end) -
+ 	    (unsigned long)(&__image_begin);
+@@ -125,6 +164,26 @@
+ 		/* copy dtb to where the booted kernel will expect it */
+ 		memcpy((void *)VMLINUX_LOAD_ADDRESS_ULL + image_size,
+ 		       __appended_dtb, dtb_size);
++#if defined(CONFIG_BLK_DEV_INITRD) && defined(CONFIG_INITRD_ROUTERBOOT)
++		/*
++		 * Copy initrd + header to after the (uncompressed) kernel + DTB + BSS sections from vmlinux.ld.S:
++		 * this must also be set in setup.c
++		 */
++		initrd_dest = ALIGN(VMLINUX_LOAD_ADDRESS_ULL + image_size + 0x100000, 0x100000) - 8;
++		/* 		__appended_dtb */
++		initrd_dest = PAGE_ALIGN(VMLINUX_LOAD_ADDRESS_ULL + image_size +
++				0x100000 + 0x100000 + 8) - 8;
++		/*		after DTB + after BSS + header space*/
++
++		if(initrd_start && initrd_size) {
++			puts("copy rb initrd to: ");
++			puthex(initrd_dest);
++			puts("\n");
++
++			memcpy((void *) initrd_dest, initrd_header, initrd_size + 2 * 8);
++		}
++
++	#endif /* defined(CONFIG_BLK_DEV_INITRD) && defined(CONFIG_INITRD_ROUTERBOOT) */
+ 	}
+ 
+ 	/* FIXME: should we flush cache here? */
