@@ -241,6 +241,33 @@
 	spi-max-frequency = <24000000>;
 };
 
+&nor_partitions {
+	partition@c0000 {
+		label = "end-unaligned";
+		reg = <0xc0000 0x500>;
+	};
+
+	partition@c0500 {
+		label = "both-unaligned";
+		reg = <0xc0500 0x1000>;
+	};
+
+	partition@c1500 {
+		label = "start-unaligned";
+		reg = <0xc1500 0x500>;
+	};
+
+	partition@c2000 {
+		label = "aligned";
+		reg = <0xc2000 0x1000>;
+	};
+
+	partition@c3000 {
+		label = "aligned-large-on-minor-bdy";
+		reg = <0xc3000 0x10000>;
+	};
+};
+
 &nand {
 	status = "okay";
 
