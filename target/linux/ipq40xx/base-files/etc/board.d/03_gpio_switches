@@ -21,6 +21,9 @@ compex,wpj428)
 mikrotik,cap-ac)
 	ucidef_add_gpio_switch "poe_passtrough" "POE passtrough enable" "414" "0"
 	;;
+mikrotik,hap-ac3)
+	ucidef_add_gpio_switch "poe_passtrough" "PoE Passthrough" "452" "0"
+	;;
 esac
 
 board_config_flush
