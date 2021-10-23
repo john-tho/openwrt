@@ -80,6 +80,8 @@
 
 		edma@c080000 {
 			status = "okay";
+			qcom,poll_required = <0>;
+			qcom,num_gmac = <1>;
 		};
 	};
 
@@ -313,6 +315,11 @@
 
 &mdio {
 	status = "okay";
+};
+
+&gmac0 {
+	/* disable edma fake eth1*/
+	vlan_tag = <0 0x3f>;
 };
 
 &wifi0 {
