@@ -69,7 +69,13 @@ TARGET_DEVICES += mikrotik_lhgg-60ad
 
 define Device/mikrotik_sxtsq-5-ac
 	$(call Device/mikrotik_nor)
-	DEVICE_MODEL := SXTsq 5 ac (RBSXTsqG-5acD)
+	DEVICE_MODEL := SXTsq 5 ac
+	DEVICE_ALT0_VENDOR := Mikrotik
+	DEVICE_ALT0_MODEL := LDF 5 ac
+	DEVICE_ALT1_VENDOR := Mikrotik
+	DEVICE_ALT1_MODEL := LHG 5 ac
+	DEVICE_ALT2_VENDOR := Mikrotik
+	DEVICE_ALT2_MODEL := LHG XL 5 ac
 	SOC := qcom-ipq4018
 	DEVICE_PACKAGES := rssileds
 endef
