@@ -17,7 +17,7 @@ ipq40xx_setup_interfaces()
 	engenius,emr3500|\
 	engenius,ens620ext|\
 	luma,wrtq-329acn|\
-	mikrotik,routerboard-wap-g-5hacd2hnd|\
+	mikrotik,rbwapg-5hacd2hnd|\
 	netgear,wac510|\
 	plasmacloud,pa1200|\
 	plasmacloud,pa2200)
@@ -182,7 +182,7 @@ ipq40xx_setup_macs()
 		lan_mac=$(macaddr_add "$wan_mac" 1)
 		;;
 	mikrotik,hap-ac2 |\
-	mikrotik,routerboard-wap-g-5hacd2hnd)
+	mikrotik,rbwapg-5hacd2hnd)
 		wan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
 		lan_mac=$(macaddr_add $wan_mac 1)
 		label_mac="$wan_mac"

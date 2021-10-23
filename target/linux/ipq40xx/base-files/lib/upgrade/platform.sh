@@ -113,7 +113,7 @@ platform_do_upgrade() {
 		nand_do_upgrade "$1"
 		;;
 	mikrotik,hap-ac2 |\
-	mikrotik,routerboard-wap-g-5hacd2hnd |\
+	mikrotik,rbwapg-5hacd2hnd |\
 	mikrotik,sxtsq-5-ac)
 		[ "$(rootfs_type)" = "tmpfs" ] && mtd erase firmware
 		default_do_upgrade "$1"
