@@ -56,15 +56,15 @@ define Device/mikrotik_lhgg-60ad
 endef
 TARGET_DEVICES += mikrotik_lhgg-60ad
 
-define Device/mikrotik_routerboard-wap-g-5hacd2hnd
+define Device/mikrotik_rbwapg-5hacd2hnd
 	$(call Device/mikrotik_nor)
-	DEVICE_MODEL := RouterBOARD wAP G-5HacD2HnD
+	DEVICE_MODEL := RBwAPG-5HacD2HnD
 	DEVICE_ALT0_VENDOR := Mikrotik
 	DEVICE_ALT0_MODEL := wAP AC
 	SOC := qcom-ipq4018
 	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
 endef
-TARGET_DEVICES += mikrotik_routerboard-wap-g-5hacd2hnd
+TARGET_DEVICES += mikrotik_rbwapg-5hacd2hnd
 
 define Device/mikrotik_sxtsq-5-ac
 	$(call Device/mikrotik_nor)
