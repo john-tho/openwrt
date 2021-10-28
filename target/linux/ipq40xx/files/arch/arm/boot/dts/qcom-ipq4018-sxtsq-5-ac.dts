@@ -176,6 +176,24 @@
 	status = "okay";
 };
 
+&gmac {
+	status = "okay";
+};
+
+&switch {
+	status = "okay";
+
+	/* temporary workaround */
+	mac-mode = <3>;
+};
+
+&swport5 {
+	status = "okay";
+
+	label = "ether1";
+	phy-mode = "rgmii-id";
+};
+
 &wifi1 {
 	status = "okay";
 

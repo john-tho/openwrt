@@ -45,7 +45,6 @@ ipq40xx_setup_interfaces()
 	engenius,eap1300|\
 	engenius,emd1|\
 	meraki,mr33|\
-	mikrotik,sxtsq-5-ac|\
 	netgear,ex6100v2|\
 	netgear,ex6150v2|\
 	zyxel,wre6606)
@@ -63,11 +62,6 @@ ipq40xx_setup_interfaces()
 	openmesh,a42|\
 	openmesh,a62)
 		ucidef_set_interfaces_lan_wan "eth1" "eth0"
-		;;
-	mikrotik,hap-ac2)
-		ucidef_set_interfaces_lan_wan "eth0" "eth1"
-		ucidef_add_switch "switch0" \
-			"0u@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1"
 		;;
 	linksys,ea8300|\
 	linksys,mr8300)
@@ -132,21 +126,21 @@ ipq40xx_setup_interfaces()
 		ucidef_add_switch "switch0" \
 			"0u@eth0" "1:lan" "2:lan" "3:lan" "4:lan" "0u@eth1" "5:wan"
 		;;
+	mikrotik,sxtsq-5-ac)
+		ucidef_set_interface_lan "ether1"
+		;;
 	mikrotik,cap-ac |\
 	mikrotik,rbwapg-5hacd2hnd)
-		ucidef_add_switch "switch0" \
-			"0t@eth0" "4:lan" "5:wan"
+		ucidef_set_bridge_device switch
+		ucidef_set_interface_wan "ether1"
+		ucidef_set_interface_lan "ether2"
 		;;
-	mikrotik,hap-ac3)
-		ucidef_add_switch "switch0" \
-			"0t@eth0" "1:lan:4" "2:lan:3" "3:lan:2" "4:lan:1" "5:wan"
-		;;
+	mikrotik,hap-ac2 |\
+	mikrotik,hap-ac3 |\
 	mikrotik,rb450gx4)
-		# wan is referenced 2nd, so that this config matches
-		# swconfig reset (ar40xx + ess-switch bmp nodes)
-		# with WAN as VLAN 2
-		ucidef_add_switch "switch0" \
-			"0t@eth0" "2:lan" "3:lan" "4:lan" "5:lan" "1:wan"
+		ucidef_set_bridge_device switch
+		ucidef_set_interface_wan "ether1"
+		ucidef_set_interface_lan "ether2 ether3 ether4 ether5"
 		;;
 	*)
 		echo "Unsupported hardware. Network interfaces not initialized"
@@ -211,6 +205,7 @@ ipq40xx_setup_macs()
 		wan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
 		lan_mac=$(macaddr_add $wan_mac 1)
 		label_mac="$wan_mac"
+		ucidef_set_bridge_mac "$wan_mac"
 		;;
 	mikrotik,sxtsq-5-ac)
 		lan_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)

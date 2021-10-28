@@ -80,22 +80,6 @@
 		watchdog@b017000 {
 			status = "okay";
 		};
-
-		ess-switch@c000000 {
-			status = "okay";
-			/* set ar40xx.c port vlan maps */
-			/* these are used by swconfig reset */
-			/* LAN uses switch physical port 2 through 5 */
-			switch_lan_bmp = <(1<<2|1<<3|1<<4|1<<5)>;
-			/* WAN uses switch physical port 1 */
-			switch_wan_bmp = <(1<<1)>;
-		};
-
-		edma@c080000 {
-			status = "okay";
-			qcom,poll_required = <0>;
-			qcom,num_gmac = <1>;
-		};
 	};
 
 	keys {
@@ -277,7 +261,40 @@
 	status = "okay";
 };
 
-&gmac0 {
-	/* disable edma tagging */
-	vlan_tag = <0 (1<<0|1<<1|1<<2|1<<3|1<<4|1<<5)>;
+&gmac {
+	status = "okay";
+};
+
+&switch {
+	status = "okay";
+};
+
+&swport1 {
+	status = "okay";
+
+	label = "ether1";
+};
+
+&swport2 {
+	status = "okay";
+
+	label = "ether2";
+};
+
+&swport3 {
+	status = "okay";
+
+	label = "ether3";
+};
+
+&swport4 {
+	status = "okay";
+
+	label = "ether4";
+};
+
+&swport5 {
+	status = "okay";
+
+	label = "ether5";
 };

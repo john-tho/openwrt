@@ -1,0 +1,25 @@
+. /lib/functions.sh
+. /lib/functions/system.sh
+
+preinit_set_mac_address_mikrotik() {
+	case $(board_name) in
+	mikrotik,*)
+		base_mac=$(cat /sys/firmware/mikrotik/hard_config/mac_base)
+		i=0
+		ip link set dev eth0 address $(macaddr_add "$base_mac" $i)
+		# wait for switch ports to present
+		timeout=5
+		while [ ! -r /sys/class/net/ether1 -a $timeout -gt 0 ]; do
+			timeout=$((timeout - 1))
+			sleep 1
+		done
+		for devpath in /sys/class/net/ether*; do
+			device="$(basename "$devpath")"
+			ip link set dev "$device" address $(macaddr_add "$base_mac" $i)
+			i=$((i + 1))
+		done
+		;;
+	esac
+}
+
+boot_hook_add preinit_main preinit_set_mac_address_mikrotik

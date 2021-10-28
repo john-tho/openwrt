@@ -78,16 +78,6 @@
 		watchdog@b017000 {
 			status = "okay";
 		};
-
-		ess-switch@c000000 {
-			status = "okay";
-		};
-
-		edma@c080000 {
-			status = "okay";
-			qcom,poll_required = <0>;
-			qcom,num_gmac = <1>;
-		};
 	};
 
 	keys {
@@ -195,8 +185,24 @@
 	status = "okay";
 };
 
-&gmac0 {
-	vlan_tag = <0 0x3f>;
+&gmac {
+	status = "okay";
+};
+
+&switch {
+	status = "okay";
+};
+
+&swport4 {
+	status = "okay";
+
+	label = "ether2";
+};
+
+&swport5 {
+	status = "okay";
+
+	label = "ether1";
 };
 
 &wifi0 {
