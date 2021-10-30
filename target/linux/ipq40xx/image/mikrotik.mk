@@ -35,7 +35,6 @@ define Device/mikrotik_cap-ac
 	$(call Device/mikrotik_nor)
 	DEVICE_MODEL := cAP ac
 	SOC := qcom-ipq4018
-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
 endef
 TARGET_DEVICES += mikrotik_cap-ac
 
@@ -43,7 +42,6 @@ define Device/mikrotik_hap-ac2
 	$(call Device/mikrotik_nor)
 	DEVICE_MODEL := hAP ac2
 	SOC := qcom-ipq4018
-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
 endef
 TARGET_DEVICES += mikrotik_hap-ac2
 
@@ -53,7 +51,8 @@ define Device/mikrotik_hap-ac3
 	SOC := qcom-ipq4019
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DEVICE_PACKAGES := kmod-ledtrig-gpio ipq-wifi-mikrotik_hap-ac3
+	DEVICE_PACKAGES := kmod-ledtrig-gpio ipq-wifi-mikrotik_hap-ac3 \
+			   -kmod-ath10k-ct-smallbuffers kmod-ath10k-ct
 endef
 TARGET_DEVICES += mikrotik_hap-ac3
 
@@ -62,8 +61,9 @@ define Device/mikrotik_rb450gx4
 	DEVICE_MODEL := RouterBOARD RB450Gx4
 	SOC := qcom-ipq4019
 	DEVICE_DTS := qcom-ipq4019-rb450gx4
-	DEVICE_PACKAGES := -kmod-ath10k-ct -ath10k-firmware-qca4019-ct \
-		-wpad-basic-wolfssl
+	DEVICE_PACKAGES := -kmod-ath10k-ct-smallbuffers \
+			   -ath10k-firmware-qca4019-ct \
+			   -wpad-basic-wolfssl
 endef
 
 define Device/mikrotik_rb450gx4-128k
@@ -90,7 +90,6 @@ define Device/mikrotik_rbwapg-5hacd2hnd
 	DEVICE_ALT0_VENDOR := Mikrotik
 	DEVICE_ALT0_MODEL := wAP AC
 	SOC := qcom-ipq4018
-	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
 endef
 TARGET_DEVICES += mikrotik_rbwapg-5hacd2hnd
 
@@ -104,6 +103,7 @@ define Device/mikrotik_sxtsq-5-ac
 	DEVICE_ALT2_VENDOR := Mikrotik
 	DEVICE_ALT2_MODEL := LHG XL 5 ac
 	SOC := qcom-ipq4018
-	DEVICE_PACKAGES := rssileds
+	DEVICE_PACKAGES := rssileds \
+			   -kmod-ath10k-ct-smallbuffers kmod-ath10k-ct
 endef
 TARGET_DEVICES += mikrotik_sxtsq-5-ac
