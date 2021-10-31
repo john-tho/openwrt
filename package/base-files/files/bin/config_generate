@@ -33,6 +33,7 @@ generate_bridge_vlan() {
 		set network.$name=bridge-vlan
 		set network.$name.device='$device'
 		set network.$name.vlan='$vlan'
+		set network.$name.alias='$name'
 		set network.$name.ports='$ports'
 	EOF
 }
@@ -138,7 +139,7 @@ generate_network() {
 			vlan=$bridge_vlan_id
 		fi
 		generate_bridge_vlan $1 $bridge "$ports" $vlan
-		device=$bridge.$vlan
+		device=$bridge.$1_vlan
 		type=""
 	}
 
