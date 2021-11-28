@@ -168,9 +168,10 @@ platform_do_upgrade() {
 		CI_KERNPART="part.safe"
 		nand_do_upgrade "$1"
 		;;
-	mikrotik,cap-ac|\
-	mikrotik,hap-ac2|\
-	mikrotik,lhgg-60ad|\
+	mikrotik,cap-ac |\
+	mikrotik,hap-ac2 |\
+	mikrotik,lhgg-60ad |\
+	mikrotik,rbwapg-5hacd2hnd |\
 	mikrotik,sxtsq-5-ac)
 		[ "$(rootfs_type)" = "tmpfs" ] && mtd erase firmware
 		default_do_upgrade "$1"
