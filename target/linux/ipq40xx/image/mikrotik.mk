@@ -63,8 +63,7 @@ define Device/mikrotik_routerboard-wap-g-5hacd2hnd
 	DEVICE_ALT0_VENDOR := Mikrotik
 	DEVICE_ALT0_MODEL := wAP AC
 	SOC := qcom-ipq4018
-	DEVICE_PACKAGES := ipq-wifi-mikrotik_routerboard-wap-g-5hacd2hnd \
-		-kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
+	DEVICE_PACKAGES := -kmod-ath10k-ct kmod-ath10k-ct-smallbuffers
 endef
 TARGET_DEVICES += mikrotik_routerboard-wap-g-5hacd2hnd
 
