@@ -16,4 +16,15 @@ config MIKROTIK_RB_SYSFS
 	help
 	  This driver exposes RouterBoot configuration in sysfs.
 
+if MIKROTIK_RB_SYSFS
+
+config MIKROTIK_RB_MACADDRS
+	bool "RouterBoot set MAC addresses with dynamic DT properties"
+	default n
+	select OF_DYNAMIC
+	help
+	  This driver uses the hard cfg tag MAC address, and DT descriptions
+	  to dynamically set ethernet mac addresses.
+
+endif # MIKROTIK_RB_SYSFS
 endif # MIKROTIK
