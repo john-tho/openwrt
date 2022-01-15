@@ -28,7 +28,6 @@
 				#size-cells = <1>;
 				label = "RouterBoot";
 				reg = <0x80000 0x40000>;
-				read-only;
 
 				partition@0 {
 					label = "bootloader1";
