@@ -1,0 +1,46 @@
+From 0850643b203fea4106aa063f235f708f6c18b809 Mon Sep 17 00:00:00 2001
+From: Luo Jie <luoj@codeaurora.org>
+Date: Sun, 24 Oct 2021 16:27:31 +0800
+Subject: [PATCH 771/778] net: phy: add qca8081 get_features
+
+Reuse the at803x phy driver get_features excepting
+adding 2500M capability.
+
+Signed-off-by: Luo Jie <luoj@codeaurora.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/phy/at803x.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index cecf78e6c643..c4b7ac03cd35 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -744,6 +744,15 @@ static int at803x_get_features(struct phy_device *phydev)
+ 	if (err)
+ 		return err;
+ 
++	if (phydev->drv->phy_id == QCA8081_PHY_ID) {
++		err = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_NG_EXTABLE);
++		if (err < 0)
++			return err;
++
++		linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT, phydev->supported,
++				err & MDIO_PMA_NG_EXTABLE_2_5GBT);
++	}
++
+ 	if (phydev->drv->phy_id != ATH8031_PHY_ID)
+ 		return 0;
+ 
+@@ -1653,6 +1662,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.set_tunable		= at803x_set_tunable,
+ 	.set_wol		= at803x_set_wol,
+ 	.get_wol		= at803x_get_wol,
++	.get_features		= at803x_get_features,
+ 	.suspend		= genphy_suspend,
+ 	.resume			= genphy_resume,
+ 	.read_status		= qca808x_read_status,
+-- 
+2.34.1
+

@@ -1,0 +1,41 @@
+From e75ced0692768f577ef69a6896bd146a71816205 Mon Sep 17 00:00:00 2001
+From: Luo Jie <luoj@codeaurora.org>
+Date: Sun, 24 Oct 2021 16:27:26 +0800
+Subject: [PATCH 766/778] net: phy: at803x: use phy_modify()
+
+Convert at803x_set_wol to use phy_modify.
+
+Signed-off-by: Luo Jie <luoj@codeaurora.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/phy/at803x.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index d0f41cdaec75..cf25cd428ffa 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -357,16 +357,12 @@ static int at803x_set_wol(struct phy_device *phydev,
+ 			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
+ 				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
+ 
+-		value = phy_read(phydev, AT803X_INTR_ENABLE);
+-		value |= AT803X_INTR_ENABLE_WOL;
+-		ret = phy_write(phydev, AT803X_INTR_ENABLE, value);
++		ret = phy_modify(phydev, AT803X_INTR_ENABLE, 0, AT803X_INTR_ENABLE_WOL);
+ 		if (ret)
+ 			return ret;
+ 		value = phy_read(phydev, AT803X_INTR_STATUS);
+ 	} else {
+-		value = phy_read(phydev, AT803X_INTR_ENABLE);
+-		value &= (~AT803X_INTR_ENABLE_WOL);
+-		ret = phy_write(phydev, AT803X_INTR_ENABLE, value);
++		ret = phy_modify(phydev, AT803X_INTR_ENABLE, AT803X_INTR_ENABLE_WOL, 0);
+ 		if (ret)
+ 			return ret;
+ 		value = phy_read(phydev, AT803X_INTR_STATUS);
+-- 
+2.34.1
+

@@ -1,0 +1,107 @@
+From 939ca53160bd3eb1044447099981f2de15347b24 Mon Sep 17 00:00:00 2001
+From: Luo Jie <luoj@codeaurora.org>
+Date: Sun, 24 Oct 2021 16:27:36 +0800
+Subject: [PATCH 776/778] net: phy: add qca8081 soft_reset and enable
+ master/slave seed
+
+qca8081 phy is a single port phy, configure
+phy the lower seed value to make it linked as slave
+mode easier.
+
+Signed-off-by: Luo Jie <luoj@codeaurora.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/phy/at803x.c | 48 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index da710523b7c4..1418db4f2091 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -223,6 +223,12 @@
+ #define QCA808X_PHY_MMD3_DEBUG_6		0xa011
+ #define QCA808X_MMD3_DEBUG_6_VALUE		0x5f85
+ 
++/* master/slave seed config */
++#define QCA808X_PHY_DEBUG_LOCAL_SEED		9
++#define QCA808X_MASTER_SLAVE_SEED_ENABLE	BIT(1)
++#define QCA808X_MASTER_SLAVE_SEED_CFG		GENMASK(12, 2)
++#define QCA808X_MASTER_SLAVE_SEED_RANGE		0x32
++
+ MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
+ MODULE_AUTHOR("Matus Ujhelyi");
+ MODULE_LICENSE("GPL");
+@@ -1569,6 +1575,26 @@ static int qca808x_phy_fast_retrain_config(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static int qca808x_phy_ms_random_seed_set(struct phy_device *phydev)
++{
++	u16 seed_value = (prandom_u32() % QCA808X_MASTER_SLAVE_SEED_RANGE);
++
++	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_LOCAL_SEED,
++			QCA808X_MASTER_SLAVE_SEED_CFG,
++			FIELD_PREP(QCA808X_MASTER_SLAVE_SEED_CFG, seed_value));
++}
++
++static int qca808x_phy_ms_seed_enable(struct phy_device *phydev, bool enable)
++{
++	u16 seed_enable = 0;
++
++	if (enable)
++		seed_enable = QCA808X_MASTER_SLAVE_SEED_ENABLE;
++
++	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_LOCAL_SEED,
++			QCA808X_MASTER_SLAVE_SEED_ENABLE, seed_enable);
++}
++
+ static int qca808x_config_init(struct phy_device *phydev)
+ {
+ 	int ret;
+@@ -1590,6 +1616,16 @@ static int qca808x_config_init(struct phy_device *phydev)
+ 	if (ret)
+ 		return ret;
+ 
++	/* Configure lower ramdom seed to make phy linked as slave mode */
++	ret = qca808x_phy_ms_random_seed_set(phydev);
++	if (ret)
++		return ret;
++
++	/* Enable seed */
++	ret = qca808x_phy_ms_seed_enable(phydev, true);
++	if (ret)
++		return ret;
++
+ 	/* Configure adc threshold as 100mv for the link 10M */
+ 	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_ADC_THRESHOLD,
+ 			QCA808X_ADC_THRESHOLD_MASK, QCA808X_ADC_THRESHOLD_100MV);
+@@ -1622,6 +1658,17 @@ static int qca808x_read_status(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static int qca808x_soft_reset(struct phy_device *phydev)
++{
++	int ret;
++
++	ret = genphy_soft_reset(phydev);
++	if (ret < 0)
++		return ret;
++
++	return qca808x_phy_ms_seed_enable(phydev, true);
++}
++
+ static struct phy_driver at803x_driver[] = {
+ {
+ 	/* Qualcomm Atheros AR8035 */
+@@ -1797,6 +1844,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.resume			= genphy_resume,
+ 	.read_status		= qca808x_read_status,
+ 	.config_init		= qca808x_config_init,
++	.soft_reset		= qca808x_soft_reset,
+ }, };
+ 
+ module_phy_driver(at803x_driver);
+-- 
+2.34.1
+
