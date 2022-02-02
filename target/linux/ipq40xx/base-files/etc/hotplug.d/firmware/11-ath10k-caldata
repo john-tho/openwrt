@@ -215,6 +215,7 @@ case "$FIRMWARE" in
 	;;
 "ath10k/QCA4019/hw1.0/board-ahb-a000000.wifi.bin")
 	case "$board" in
+	mikrotik,cap-ac |\
 	mikrotik,hap-ac2 |\
 	mikrotik,hap-ac3)
 		wlan_data="/sys/firmware/mikrotik/hard_config/wlan_data"
@@ -225,6 +226,7 @@ case "$FIRMWARE" in
 	;;
 "ath10k/QCA4019/hw1.0/board-ahb-a800000.wifi.bin")
 	case "$board" in
+	mikrotik,cap-ac |\
 	mikrotik,hap-ac2 |\
 	mikrotik,hap-ac3 |\
 	mikrotik,sxtsq-5-ac)
