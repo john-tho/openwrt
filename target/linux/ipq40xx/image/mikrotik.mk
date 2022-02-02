@@ -24,7 +24,7 @@ define Device/mikrotik_cap-ac
 	$(call Device/mikrotik_nor)
 	DEVICE_MODEL := cAP ac
 	SOC := qcom-ipq4018
-	DEVICE_PACKAGES := ipq-wifi-mikrotik_cap-ac -kmod-ath10k-ct \
+	DEVICE_PACKAGES := -kmod-ath10k-ct \
 		kmod-ath10k-ct-smallbuffers
 endef
 TARGET_DEVICES += mikrotik_cap-ac
