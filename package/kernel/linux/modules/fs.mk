@@ -348,6 +348,27 @@ endef
 
 $(eval $(call KernelPackage,fs-jfs))
 
+
+define KernelPackage/fs-ksmbd
+  SUBMENU:=$(FS_MENU)
+  TITLE:=SMB kernel server support
+  DEPENDS:=+kmod-asn1-decoder +kmod-oid-registry @!LINUX_5_10
+  KCONFIG:= \
+	CONFIG_SMB_SERVER=y \
+	CONFIG_SMB_SERVER_SMBDIRECT=n \
+	CONFIG_SMB_SERVER_CHECK_CAP_NET_ADMIN=n \
+	CONFIG_SMB_SERVER_KERBEROS5=n
+  FILES:=$(LINUX_DIR)/fs/ksmbd/ksmbd.ko
+  AUTOLOAD:=$(call AutoLoad,41,ksmbd)
+endef
+
+define KernelPackage/fs-ksmbd/description
+ Kernel module for SMB kernel server support
+endef
+
+$(eval $(call KernelPackage,fs-ksmbd))
+
+
 define KernelPackage/fs-minix
   SUBMENU:=$(FS_MENU)
   TITLE:=Minix filesystem support
