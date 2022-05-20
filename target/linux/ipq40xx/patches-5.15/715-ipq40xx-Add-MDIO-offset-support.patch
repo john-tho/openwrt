@@ -1,0 +1,78 @@
+From: John Thomson <git@johnthomson.fastmail.com.au>
+Date: Thu, 25 Oct 2020 07:00:00 +1000
+Subject: [PATCH] ipq4019: Add MDIO offset support
+
+This fixes networking on Mikrotik RB450Gx4, thanks to
+numerous hours of debugging by adron-s.
+In the end issue was that MDIOs were at completely different adress
+than standard.
+
+This introduces 2 DT bindings:
+qcom,mdio_offset to enter offset from default values
+qcom,mdio_offset_limit to limit offset
+
+Signed-off-by: Sergey Sergeev <adron@yapic.net>k
+[modify to suit mdio-ipq4019.c]
+Signed-off-by: John Thomson <git@johnthomson.fastmail.com.au>
+
+---
+--- a/drivers/net/mdio/mdio-ipq4019.c
++++ b/drivers/net/mdio/mdio-ipq4019.c
+@@ -9,6 +9,7 @@
+ #include <linux/module.h>
+ #include <linux/of_address.h>
+ #include <linux/of_mdio.h>
++#include <linux/of.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
+ #include <linux/clk.h>
+@@ -41,6 +42,8 @@ struct ipq4019_mdio_data {
+ 	void __iomem	*membase;
+ 	void __iomem *eth_ldo_rdy;
+ 	struct clk *mdio_clk;
++	u32 mdio_offset_limit;
++	u32 mdio_offset;
+ };
+ 
+ static int ipq4019_mdio_wait_busy(struct mii_bus *bus)
+@@ -62,6 +65,9 @@ static int ipq4019_mdio_read(struct mii_
+ 	if (ipq4019_mdio_wait_busy(bus))
+ 		return -ETIMEDOUT;
+ 
++	if (mii_id < priv->mdio_offset_limit)
++		mii_id += priv->mdio_offset;
++
+ 	/* Clause 45 support */
+ 	if (regnum & MII_ADDR_C45) {
+ 		unsigned int mmd = (regnum >> 16) & 0x1F;
+@@ -125,6 +131,9 @@ static int ipq4019_mdio_write(struct mii
+ 	if (ipq4019_mdio_wait_busy(bus))
+ 		return -ETIMEDOUT;
+ 
++	if (mii_id < priv->mdio_offset_limit)
++		mii_id += priv->mdio_offset;
++
+ 	/* Clause 45 support */
+ 	if (regnum & MII_ADDR_C45) {
+ 		unsigned int mmd = (regnum >> 16) & 0x1F;
+@@ -210,6 +219,7 @@ static int ipq_mdio_reset(struct mii_bus
+ static int ipq4019_mdio_probe(struct platform_device *pdev)
+ {
+ 	struct ipq4019_mdio_data *priv;
++	struct device_node *mdio_node;
+ 	struct mii_bus *bus;
+ 	struct resource *res;
+ 	int ret;
+@@ -220,6 +230,12 @@ static int ipq4019_mdio_probe(struct pla
+ 
+ 	priv = bus->priv;
+ 
++	mdio_node = of_node_get(pdev->dev.of_node);
++	of_property_read_u32(mdio_node, "qcom,mdio_offset", \
++			     &priv->mdio_offset);
++	of_property_read_u32(mdio_node, "qcom,mdio_offset_limit", \
++			     &priv->mdio_offset_limit);
++
+ 	priv->membase = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(priv->membase))
+ 		return PTR_ERR(priv->membase);

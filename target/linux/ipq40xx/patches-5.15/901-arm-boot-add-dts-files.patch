@@ -10,7 +10,7 @@ Signed-off-by: John Crispin <john@phrozen.org>
 
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -951,11 +951,75 @@ dtb-$(CONFIG_ARCH_QCOM) += \
+@@ -951,11 +951,77 @@ dtb-$(CONFIG_ARCH_QCOM) += \
  	qcom-ipq4018-ap120c-ac.dtb \
  	qcom-ipq4018-ap120c-ac-bit.dtb \
  	qcom-ipq4018-jalapeno.dtb \
@@ -32,6 +32,7 @@ Signed-off-by: John Crispin <john@phrozen.org>
 +	qcom-ipq4018-meshpoint-one.dtb \
 +	qcom-ipq4018-cap-ac.dtb \
 +	qcom-ipq4018-hap-ac2.dtb \
++	qcom-ipq4018-rbwapg-5hacd2hnd.dtb \
 +	qcom-ipq4018-sxtsq-5-ac.dtb \
 +	qcom-ipq4018-nbg6617.dtb \
 +	qcom-ipq4019-oap100.dtb \
@@ -64,6 +65,7 @@ Signed-off-by: John Crispin <john@phrozen.org>
 +	qcom-ipq4019-pa2200.dtb \
 +	qcom-ipq4019-r619ac-64m.dtb \
 +	qcom-ipq4019-r619ac-128m.dtb \
++	qcom-ipq4019-rb450gx4.dts \
 +	qcom-ipq4019-rbr50.dtb \
 +	qcom-ipq4019-rbs50.dtb \
 +	qcom-ipq4019-rt-ac42u.dtb \

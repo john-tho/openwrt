@@ -1,0 +1,69 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/* Copyright (c) 2020, Robert Marko <robimarko@gmail.com> */
+
+#include "qcom-ipq4019.dtsi"
+
+&blsp1_spi1 {
+
+	flash0: flash@0 {
+		reg = <0>;
+		compatible = "jedec,spi-nor";
+		spi-max-frequency = <40000000>;
+		m25p,fast-read;
+
+		nor_partitions: partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "Qualcomm";
+				reg = <0x0 0x80000>;
+				read-only;
+			};
+
+			partition@80000 {
+				compatible = "fixed-partitions";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				label = "RouterBoot";
+				reg = <0x80000 0x40000>;
+
+				partition@0 {
+					label = "bootloader1";
+					reg = <0x0 0xe000>;
+					read-only;
+				};
+
+				partition@e000 {
+					label = "hard_config";
+					reg = <0xe000 0x2000>;
+					read-only;
+				};
+
+				partition@10000 {
+					label = "dtb_config";
+					reg = <0x10000 0x10000>;
+					read-only;
+				};
+
+				partition@20000 {
+					label = "bios";
+					reg = <0x20000 0x1000>;
+					read-only;
+				};
+
+				partition@30000 {
+					label = "bootloader2";
+					reg = <0x30000 0xd000>;
+					read-only;
+				};
+
+				partition@3d000 {
+					label = "soft_config";
+					reg = <0x3d000 0x1000>;
+				};
+			};
+		};
+	};
+};

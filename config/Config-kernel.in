@@ -676,6 +676,10 @@ config KERNEL_BIG_KEYS
 	depends on KERNEL_KEYS
 	default n
 
+config KERNEL_MTD_PARTITIONED_MASTER
+	bool "Enable MTD master device when device is partitioned"
+	default n
+
 #
 # CGROUP support symbols
 #
