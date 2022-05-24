@@ -4,6 +4,7 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/interrupt-controller/irq.h>
 
 / {
 	compatible = "mikrotik,routerboard-wap-g-5hact2hnd", "qca,qca9556";
@@ -12,6 +13,19 @@
 	aliases {
 		mdio-gpio1 = &mdio2;
 		serial0 = &uart;
+		led-boot = &led_pwr;
+		led-failsafe = &led_pwr;
+		led-upgrade = &led_pwr;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_pwr: pwr {
+			label = "blue:power";
+			gpios = <&gpio 16 GPIO_ACTIVE_LOW>;
+			default-state = "on";
+		};
 	};
 
 	keys {
@@ -109,6 +123,16 @@
 			};
 		};
 	};
+
+	zt2046@2 {
+		reg = <2>;
+		compatible = "zt2046q", "ti,ads7846";
+		spi-max-frequency = <10000000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinmux_spi_cs2>;
+		interrupts-extended = <&gpio 30 IRQ_TYPE_NONE>;
+		pendown-gpio = <&gpio 31 GPIO_ACTIVE_LOW>;
+	};
 };
 
 &wmac {
@@ -123,5 +147,14 @@
 	wifi@0,0 {
 		compatible = "qcom,ath10k";
 		reg = <0 0 0 0 0>;
+	};
+};
+
+&pinmux {
+	pinmux_spi_cs2: pinmux_spi_cs2 {
+		/* set SoC GPIOs8-11 functions (GPIO register offset 0x8)
+		 * function CS2(0xb), 8 bits per GPIO (set GPIO11)
+		 */
+		pinctrl-single,bits = <0x8 (0xb << (8*3)) (0xb << (8*3))>;
 	};
 };
