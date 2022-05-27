@@ -77,7 +77,7 @@
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
-		spi-max-frequency = <40000000>;
+		spi-max-frequency = <20000000>;
 
 		partitions {
 			compatible = "fixed-partitions";
@@ -127,10 +127,11 @@
 	zt2046@2 {
 		reg = <2>;
 		compatible = "zt2046q", "ti,ads7846";
-		spi-max-frequency = <10000000>;
+		spi-max-frequency = <3125000>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinmux_spi_cs2>;
-		interrupts-extended = <&gpio 30 IRQ_TYPE_NONE>;
+		interrupt-parrent = <&gpio>;
+		interrupts = <29 IRQ_TYPE_NONE>;
 		pendown-gpio = <&gpio 31 GPIO_ACTIVE_LOW>;
 	};
 };
