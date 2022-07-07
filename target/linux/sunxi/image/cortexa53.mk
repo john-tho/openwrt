@@ -114,3 +114,14 @@ define Device/xunlong_orangepi-zero-plus
   $(Device/sun50i-h5)
 endef
 TARGET_DEVICES += xunlong_orangepi-zero-plus
+
+define Device/xunlong_orangepi-zero-plus2
+  DEVICE_VENDOR := Xunlong
+  DEVICE_MODEL := Orange Pi Zero Plus2 H5
+  $(Device/sun50i-h5)
+  DEVICE_PACKAGES := \
+	cypress-firmware-43430-sdio \
+	kmod-brcmfmac wpad-basic-wolfssl \
+	kmod-usb-gadget-cdc-composite-autoload
+endef
+TARGET_DEVICES += xunlong_orangepi-zero-plus2
