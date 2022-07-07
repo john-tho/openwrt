@@ -327,6 +327,15 @@ define U-Boot/orangepi_zero_plus
   ATF:=a64
 endef
 
+define U-Boot/orangepi_zero_plus2
+  BUILD_SUBTARGET:=cortexa53
+  NAME:=Xunlong Orange Pi Zero Plus2 H5
+  BUILD_DEVICES:=xunlong_orangepi-zero-plus2
+  DEPENDS:=+PACKAGE_u-boot-orangepi_zero_plus2:trusted-firmware-a-sunxi-a64
+  UENV:=a64
+  ATF:=a64
+endef
+
 define U-Boot/orangepi_pc2
   BUILD_SUBTARGET:=cortexa53
   NAME:=Xunlong Orange Pi PC2
@@ -424,6 +433,7 @@ UBOOT_TARGETS := \
 	Sinovoip_BPI_M3 \
 	sopine_baseboard \
 	orangepi_zero_plus \
+	orangepi_zero_plus2 \
 	libretech_all_h3_cc_h5
 
 UBOOT_CONFIGURE_VARS += USE_PRIVATE_LIBGCC=yes

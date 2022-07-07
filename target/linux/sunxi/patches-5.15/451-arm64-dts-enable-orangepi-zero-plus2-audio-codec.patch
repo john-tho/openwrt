@@ -1,0 +1,14 @@
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-zero-plus2.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h5-orangepi-zero-plus2.dts
+@@ -141,3 +141,11 @@
+ &usbphy {
+ 	status = "okay";
+ };
++
++&codec {
++	allwinner,audio-routing =
++		"Line Out", "LINEOUT",
++		"MIC1", "Mic",
++		"Mic", "MBIAS";
++	status = "okay";
++};

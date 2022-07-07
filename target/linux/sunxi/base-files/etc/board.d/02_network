@@ -23,6 +23,9 @@ sunxi_setup_interfaces()
 	xunlong,orangepi-r1)
 		ucidef_set_interfaces_lan_wan "eth0" "eth1"
 		;;
+	xunlong,orangepi-zero-plus2)
+		ucidef_set_interface_lan "usb0"
+		;;
 	*)
 		ucidef_set_interface_lan "eth0"
 		;;
