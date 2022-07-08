@@ -250,6 +250,16 @@ endef
 
 $(eval $(call KernelPackage,usb-gadget-cdc-composite))
 
+define KernelPackage/usb-gadget-cdc-composite-autoload
+  $(call KernelPackage/usb-gadget-cdc-composite)
+  TITLE += " AutoLoad"
+  KCONFIG:=CONFIG_USB_CDC_COMPOSITE
+  DEPENDS:=+kmod-usb-gadget-cdc-composite
+  FILES:=
+  AUTOLOAD:=$(call AutoLoad,53,g_cdc,1)
+endef
+
+$(eval $(call KernelPackage,usb-gadget-cdc-composite-autoload))
 
 define KernelPackage/usb-uhci
   TITLE:=Support for UHCI controllers
