@@ -25,7 +25,7 @@ raspberrypi,model-b-rev2)
 
 raspberrypi,model-zero-2 |\
 raspberrypi,model-zero-w)
-	ucidef_set_interface_lan "wlan0"
+	ucidef_set_interface_lan "wlan0" "usb0"
 	;;
 esac
 
