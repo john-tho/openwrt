@@ -598,6 +598,18 @@ config KERNEL_DEBUG_ATOMIC_SLEEP
 	  held, inside an rcu read side critical section, inside preempt disabled
 	  sections, inside an interrupt, etc...
 
+config KERNEL_DEBUG_VM_VMACACHE
+	bool
+	default n
+
+config KERNEL_DEBUG_VM_RB
+	bool
+	default n
+
+config KERNEL_DEBUG_VM_PGFLAGS
+	bool
+	default n
+
 config KERNEL_DEBUG_VM
 	bool "Compile the kernel with debug VM"
 	depends on KERNEL_DEBUG_KERNEL
