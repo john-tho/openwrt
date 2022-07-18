@@ -7,17 +7,9 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=arm-trusted-firmware-sunxi
-PKG_RELEASE:=1
-
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL=https://github.com/ARM-software/arm-trusted-firmware
-PKG_SOURCE_DATE:=2020-11-17
-PKG_SOURCE_VERSION:=e2c509a39c6cc4dda8734e6509cdbe6e3603cdfc
-PKG_MIRROR_HASH:=b212d369a5286ebbf6a5616486efa05fa54d4294fd6e9ba2e54fdfae9eda918d
-
-PKG_LICENSE:=BSD-3-Clause
-PKG_LICENSE_FILES:=license.md
+PKG_VERSION:=2.4
+PKG_RELEASE:=$(AUTORELEASE)
+PKG_HASH:=bf3eb3617a74cddd7fb0e0eacbfe38c3258ee07d4c8ed730deef7a175cc3d55b
 
 PKG_MAINTAINER:=Hauke Mehrtens <hauke@hauke-m.de>
 
