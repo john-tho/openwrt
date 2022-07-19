@@ -7,9 +7,9 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_VERSION:=2.4
+PKG_VERSION:=2.6
 PKG_RELEASE:=$(AUTORELEASE)
-PKG_HASH:=bf3eb3617a74cddd7fb0e0eacbfe38c3258ee07d4c8ed730deef7a175cc3d55b
+PKG_HASH:=4e59f02ccb042d5d18c89c849701b96e6cf4b788709564405354b5d313d173f7
 
 PKG_MAINTAINER:=Hauke Mehrtens <hauke@hauke-m.de>
 
