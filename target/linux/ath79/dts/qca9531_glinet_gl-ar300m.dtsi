@@ -45,6 +45,7 @@
 		regulator-max-microvolt = <5000000>;
 		gpio = <&gpio 2 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
+		regulator-boot-on;
 	};
 
 	leds {
