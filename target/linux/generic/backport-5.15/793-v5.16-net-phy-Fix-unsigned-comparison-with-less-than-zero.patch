@@ -1,0 +1,31 @@
+From 911e3a46fb38669560021537e00222591231f456 Mon Sep 17 00:00:00 2001
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Date: Wed, 27 Oct 2021 16:59:51 +0800
+Subject: [PATCH] net: phy: Fix unsigned comparison with less than zero
+
+Fix the following coccicheck warning:
+
+./drivers/net/phy/at803x.c:493:5-10: WARNING: Unsigned expression
+compared with zero: value < 0.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Fixes: 7beecaf7d507 ("net: phy: at803x: improve the WOL feature")
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Link: https://lore.kernel.org/r/1635325191-101815-1-git-send-email-jiapeng.chong@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/phy/at803x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -484,7 +484,7 @@ static int at803x_set_wol(struct phy_dev
+ static void at803x_get_wol(struct phy_device *phydev,
+ 			   struct ethtool_wolinfo *wol)
+ {
+-	u32 value;
++	int value;
+ 
+ 	wol->supported = WAKE_MAGIC;
+ 	wol->wolopts = 0;
