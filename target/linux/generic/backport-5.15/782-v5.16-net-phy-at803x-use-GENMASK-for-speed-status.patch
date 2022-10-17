@@ -12,8 +12,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 1363f12ba659..3465f2bb6356 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
 @@ -33,10 +33,10 @@
@@ -31,7 +29,7 @@ index 1363f12ba659..3465f2bb6356 100644
  #define AT803X_SS_DUPLEX			BIT(13)
  #define AT803X_SS_SPEED_DUPLEX_RESOLVED		BIT(11)
  #define AT803X_SS_MDIX				BIT(6)
-@@ -994,7 +994,7 @@ static int at803x_read_status(struct phy_device *phydev)
+@@ -985,7 +985,7 @@ static int at803x_read_status(struct phy
  		if (sfc < 0)
  			return sfc;
  
@@ -40,6 +38,3 @@ index 1363f12ba659..3465f2bb6356 100644
  		case AT803X_SS_SPEED_10:
  			phydev->speed = SPEED_10;
  			break;
--- 
-2.34.1
-

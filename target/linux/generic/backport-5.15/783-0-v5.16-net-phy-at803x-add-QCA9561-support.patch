@@ -17,11 +17,9 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  drivers/net/phy/at803x.c | 23 +++++++++++++++++++++--
  1 file changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 3feee4d59030..ae7e1f1c59f0 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -153,6 +153,7 @@
+@@ -161,6 +161,7 @@
  #define QCA8327_A_PHY_ID			0x004dd033
  #define QCA8327_B_PHY_ID			0x004dd034
  #define QCA8337_PHY_ID				0x004dd036
@@ -29,7 +27,7 @@ index 3feee4d59030..ae7e1f1c59f0 100644
  #define QCA8K_PHY_ID_MASK			0xffffffff
  
  #define QCA8K_DEVFLAGS_REVISION_MASK		GENMASK(2, 0)
-@@ -1237,7 +1238,8 @@ static int at803x_cable_test_get_status(struct phy_device *phydev,
+@@ -1263,7 +1264,8 @@ static int at803x_cable_test_get_status(
  	int pair, ret;
  
  	if (phydev->phy_id == ATH9331_PHY_ID ||
@@ -39,7 +37,7 @@ index 3feee4d59030..ae7e1f1c59f0 100644
  		pair_mask = 0x3;
  	else
  		pair_mask = 0xf;
-@@ -1277,7 +1279,8 @@ static int at803x_cable_test_start(struct phy_device *phydev)
+@@ -1303,7 +1305,8 @@ static int at803x_cable_test_start(struc
  	phy_write(phydev, MII_BMCR, BMCR_ANENABLE);
  	phy_write(phydev, MII_ADVERTISE, ADVERTISE_CSMA);
  	if (phydev->phy_id != ATH9331_PHY_ID &&
@@ -49,11 +47,10 @@ index 3feee4d59030..ae7e1f1c59f0 100644
  		phy_write(phydev, MII_CTRL1000, 0);
  
  	/* we do all the (time consuming) work later */
-@@ -1408,6 +1411,21 @@ static struct phy_driver at803x_driver[] = {
- 	.read_status		= at803x_read_status,
+@@ -1518,6 +1521,21 @@ static struct phy_driver at803x_driver[]
  	.soft_reset		= genphy_soft_reset,
  	.config_aneg		= at803x_config_aneg,
-+}, {
+ }, {
 +	/* Qualcomm Atheros QCA9561 */
 +	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
 +	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
@@ -68,10 +65,11 @@ index 3feee4d59030..ae7e1f1c59f0 100644
 +	.read_status		= at803x_read_status,
 +	.soft_reset		= genphy_soft_reset,
 +	.config_aneg		= at803x_config_aneg,
- }, {
++}, {
  	/* QCA8337 */
  	.phy_id			= QCA8337_PHY_ID,
-@@ -1466,6 +1484,7 @@ static struct mdio_device_id __maybe_unused atheros_tbl[] = {
+ 	.phy_id_mask		= QCA8K_PHY_ID_MASK,
+@@ -1578,6 +1596,7 @@ static struct mdio_device_id __maybe_unu
  	{ PHY_ID_MATCH_EXACT(QCA8337_PHY_ID) },
  	{ PHY_ID_MATCH_EXACT(QCA8327_A_PHY_ID) },
  	{ PHY_ID_MATCH_EXACT(QCA8327_B_PHY_ID) },
@@ -79,6 +77,3 @@ index 3feee4d59030..ae7e1f1c59f0 100644
  	{ }
  };
  
--- 
-2.34.1
-

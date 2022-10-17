@@ -26,8 +26,6 @@ Signed-off-by: Guenter Roeck <linux@roeck-us.net>
  drivers/hwmon/lm70.c         | 16 ++++++++++++++++
  3 files changed, 25 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/hwmon/lm70.rst b/Documentation/hwmon/lm70.rst
-index 6ddc5b67ccb5..11303a7e16a8 100644
 --- a/Documentation/hwmon/lm70.rst
 +++ b/Documentation/hwmon/lm70.rst
 @@ -15,6 +15,10 @@ Supported chips:
@@ -41,7 +39,7 @@ index 6ddc5b67ccb5..11303a7e16a8 100644
    * National Semiconductor LM71
  
      Datasheet: https://www.ti.com/product/LM71
-@@ -53,6 +57,9 @@ The LM74 and TMP121/TMP122/TMP123/TMP124 are very similar; main difference is
+@@ -53,6 +57,9 @@ The LM74 and TMP121/TMP122/TMP123/TMP124
  
  The TMP122/TMP124 also feature configurable temperature thresholds.
  
@@ -51,11 +49,9 @@ index 6ddc5b67ccb5..11303a7e16a8 100644
  The LM71 is also very similar; main difference is 14-bit temperature
  data (0.03125 degrees celsius resolution).
  
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index b3597ba66ddb..463d5b110a85 100644
 --- a/drivers/hwmon/Kconfig
 +++ b/drivers/hwmon/Kconfig
-@@ -1224,8 +1224,8 @@ config SENSORS_LM70
+@@ -1198,8 +1198,8 @@ config SENSORS_LM70
  	depends on SPI_MASTER
  	help
  	  If you say yes here you get support for the National Semiconductor
@@ -66,8 +62,6 @@ index b3597ba66ddb..463d5b110a85 100644
  
  	  This driver can also be built as a module. If so, the module
  	  will be called lm70.
-diff --git a/drivers/hwmon/lm70.c b/drivers/hwmon/lm70.c
-index d2a60de5b8de..c20a749fc7f2 100644
 --- a/drivers/hwmon/lm70.c
 +++ b/drivers/hwmon/lm70.c
 @@ -34,6 +34,7 @@
@@ -78,7 +72,7 @@ index d2a60de5b8de..c20a749fc7f2 100644
  
  struct lm70 {
  	struct spi_device *spi;
-@@ -87,6 +88,12 @@ static ssize_t temp1_input_show(struct device *dev,
+@@ -87,6 +88,12 @@ static ssize_t temp1_input_show(struct d
  	 * LM71:
  	 * 14 bits of 2's complement data, discard LSB 2 bits,
  	 * resolution 0.0312 degrees celsius.
@@ -91,7 +85,7 @@ index d2a60de5b8de..c20a749fc7f2 100644
  	 */
  	switch (p_lm70->chip) {
  	case LM70_CHIP_LM70:
-@@ -102,6 +109,10 @@ static ssize_t temp1_input_show(struct device *dev,
+@@ -102,6 +109,10 @@ static ssize_t temp1_input_show(struct d
  	case LM70_CHIP_LM71:
  		val = ((int)raw / 4) * 3125 / 100;
  		break;
@@ -102,18 +96,18 @@ index d2a60de5b8de..c20a749fc7f2 100644
  	}
  
  	status = sprintf(buf, "%d\n", val); /* millidegrees Celsius */
-@@ -135,6 +146,10 @@ static const struct of_device_id lm70_of_ids[] = {
- 		.compatible = "ti,tmp122",
+@@ -136,6 +147,10 @@ static const struct of_device_id lm70_of
  		.data = (void *) LM70_CHIP_TMP122,
  	},
-+	{
+ 	{
 +		.compatible = "ti,tmp125",
 +		.data = (void *) LM70_CHIP_TMP125,
 +	},
- 	{
++	{
  		.compatible = "ti,lm71",
  		.data = (void *) LM70_CHIP_LM71,
-@@ -184,6 +199,7 @@ static const struct spi_device_id lm70_ids[] = {
+ 	},
+@@ -184,6 +199,7 @@ static const struct spi_device_id lm70_i
  	{ "lm70",   LM70_CHIP_LM70 },
  	{ "tmp121", LM70_CHIP_TMP121 },
  	{ "tmp122", LM70_CHIP_TMP122 },
@@ -121,6 +115,3 @@ index d2a60de5b8de..c20a749fc7f2 100644
  	{ "lm71",   LM70_CHIP_LM71 },
  	{ "lm74",   LM70_CHIP_LM74 },
  	{ },
--- 
-2.37.2
-

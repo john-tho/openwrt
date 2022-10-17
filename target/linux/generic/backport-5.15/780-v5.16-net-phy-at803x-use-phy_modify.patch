@@ -13,11 +13,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 8 ++------
  1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index d0f41cdaec75..cf25cd428ffa 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -357,16 +357,12 @@ static int at803x_set_wol(struct phy_device *phydev,
+@@ -356,16 +356,12 @@ static int at803x_set_wol(struct phy_dev
  			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
  				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
  
@@ -36,6 +34,3 @@ index d0f41cdaec75..cf25cd428ffa 100644
  		if (ret)
  			return ret;
  		value = phy_read(phydev, AT803X_INTR_STATUS);
--- 
-2.34.1
-

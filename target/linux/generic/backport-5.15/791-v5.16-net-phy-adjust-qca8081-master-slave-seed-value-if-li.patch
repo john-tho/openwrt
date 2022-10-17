@@ -19,11 +19,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 16 ++++++++++++++++
  1 file changed, 16 insertions(+)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 1418db4f2091..00733badcda5 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -1655,6 +1655,22 @@ static int qca808x_read_status(struct phy_device *phydev)
+@@ -1647,6 +1647,22 @@ static int qca808x_read_status(struct ph
  	else
  		phydev->interface = PHY_INTERFACE_MODE_SMII;
  
@@ -46,6 +44,3 @@ index 1418db4f2091..00733badcda5 100644
  	return 0;
  }
  
--- 
-2.34.1
-

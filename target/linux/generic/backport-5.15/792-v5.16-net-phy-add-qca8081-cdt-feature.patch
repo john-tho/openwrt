@@ -16,8 +16,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 194 ++++++++++++++++++++++++++++++++++++++-
  1 file changed, 191 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 00733badcda5..f1cbe1f6ddec 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
 @@ -229,6 +229,32 @@
@@ -53,7 +51,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
  MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
  MODULE_AUTHOR("Matus Ujhelyi");
  MODULE_LICENSE("GPL");
-@@ -1319,8 +1345,14 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
+@@ -1311,8 +1337,14 @@ static int at803x_cdt_start(struct phy_d
  {
  	u16 cdt;
  
@@ -70,7 +68,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
  
  	return phy_write(phydev, AT803X_CDT, cdt);
  }
-@@ -1328,10 +1360,16 @@ static int at803x_cdt_start(struct phy_device *phydev, int pair)
+@@ -1320,10 +1352,16 @@ static int at803x_cdt_start(struct phy_d
  static int at803x_cdt_wait_for_completion(struct phy_device *phydev)
  {
  	int val, ret;
@@ -88,7 +86,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
  				    30000, 100000, true);
  
  	return ret < 0 ? ret : 0;
-@@ -1685,6 +1723,153 @@ static int qca808x_soft_reset(struct phy_device *phydev)
+@@ -1677,6 +1715,153 @@ static int qca808x_soft_reset(struct phy
  	return qca808x_phy_ms_seed_enable(phydev, true);
  }
  
@@ -242,7 +240,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
  static struct phy_driver at803x_driver[] = {
  {
  	/* Qualcomm Atheros AR8035 */
-@@ -1848,6 +2033,7 @@ static struct phy_driver at803x_driver[] = {
+@@ -1840,6 +2025,7 @@ static struct phy_driver at803x_driver[]
  	/* Qualcomm QCA8081 */
  	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
  	.name			= "Qualcomm QCA8081",
@@ -250,7 +248,7 @@ index 00733badcda5..f1cbe1f6ddec 100644
  	.config_intr		= at803x_config_intr,
  	.handle_interrupt	= at803x_handle_interrupt,
  	.get_tunable		= at803x_get_tunable,
-@@ -1861,6 +2047,8 @@ static struct phy_driver at803x_driver[] = {
+@@ -1853,6 +2039,8 @@ static struct phy_driver at803x_driver[]
  	.read_status		= qca808x_read_status,
  	.config_init		= qca808x_config_init,
  	.soft_reset		= qca808x_soft_reset,
@@ -259,6 +257,3 @@ index 00733badcda5..f1cbe1f6ddec 100644
  }, };
  
  module_phy_driver(at803x_driver);
--- 
-2.34.1
-

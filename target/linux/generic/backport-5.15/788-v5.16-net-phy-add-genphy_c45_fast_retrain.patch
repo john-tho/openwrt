@@ -13,11 +13,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  include/linux/phy.h       |  1 +
  2 files changed, 35 insertions(+)
 
-diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-index c617dbcad6ea..b01180e1f578 100644
 --- a/drivers/net/phy/phy-c45.c
 +++ b/drivers/net/phy/phy-c45.c
-@@ -611,6 +611,40 @@ int genphy_c45_loopback(struct phy_device *phydev, bool enable)
+@@ -611,6 +611,40 @@ int genphy_c45_loopback(struct phy_devic
  }
  EXPORT_SYMBOL_GPL(genphy_c45_loopback);
  
@@ -58,11 +56,9 @@ index c617dbcad6ea..b01180e1f578 100644
  struct phy_driver genphy_c45_driver = {
  	.phy_id         = 0xffffffff,
  	.phy_id_mask    = 0xffffffff,
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 736e1d1a47c4..04e90423fa88 100644
 --- a/include/linux/phy.h
 +++ b/include/linux/phy.h
-@@ -1584,6 +1584,7 @@ int genphy_c45_config_aneg(struct phy_device *phydev);
+@@ -1624,6 +1624,7 @@ int genphy_c45_config_aneg(struct phy_de
  int genphy_c45_loopback(struct phy_device *phydev, bool enable);
  int genphy_c45_pma_resume(struct phy_device *phydev);
  int genphy_c45_pma_suspend(struct phy_device *phydev);
@@ -70,6 +66,3 @@ index 736e1d1a47c4..04e90423fa88 100644
  
  /* Generic C45 PHY driver */
  extern struct phy_driver genphy_c45_driver;
--- 
-2.34.1
-

@@ -23,7 +23,7 @@ Signed-off-by: René van Dorst <opensource@vdorst.com>
  
  #define AT803X_SPECIFIC_FUNCTION_CONTROL	0x10
  #define AT803X_SFC_ASSERT_CRS			BIT(11)
-@@ -82,9 +84,18 @@
+@@ -86,9 +88,18 @@
  
  #define AT803X_MODE_CFG_MASK			0x0F
  #define AT803X_MODE_CFG_SGMII			0x01
@@ -42,7 +42,7 @@ Signed-off-by: René van Dorst <opensource@vdorst.com>
  
  #define AT803X_DEBUG_ANALOG_TEST_CTRL		0x00
  #define QCA8327_DEBUG_MANU_CTRL_EN		BIT(2)
-@@ -652,12 +663,75 @@ static int at803x_parse_dt(struct phy_de
+@@ -762,12 +773,75 @@ static int at803x_parse_dt(struct phy_de
  	return 0;
  }
  
@@ -118,15 +118,15 @@ Signed-off-by: René van Dorst <opensource@vdorst.com>
  	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
  	if (!priv)
  		return -ENOMEM;
-@@ -693,6 +767,7 @@ static int at803x_get_features(struct ph
- 	if (err)
- 		return err;
+@@ -812,6 +886,7 @@ static int at803x_get_features(struct ph
+ 				err & MDIO_PMA_NG_EXTABLE_2_5GBT);
+ 	}
  
 +#if 0
  	if (phydev->drv->phy_id != ATH8031_PHY_ID)
  		return 0;
  
-@@ -710,6 +785,7 @@ static int at803x_get_features(struct ph
+@@ -829,6 +904,7 @@ static int at803x_get_features(struct ph
  	 */
  	linkmode_clear_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
  			   phydev->supported);
@@ -134,7 +134,7 @@ Signed-off-by: René van Dorst <opensource@vdorst.com>
  	return 0;
  }
  
-@@ -775,6 +851,7 @@ static int at803x_config_init(struct phy
+@@ -894,6 +970,7 @@ static int at803x_config_init(struct phy
  {
  	int ret;
  
@@ -142,7 +142,7 @@ Signed-off-by: René van Dorst <opensource@vdorst.com>
  	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
  		/* Some bootloaders leave the fiber page selected.
  		 * Switch to the copper page, as otherwise we read
-@@ -790,6 +867,7 @@ static int at803x_config_init(struct phy
+@@ -909,6 +986,7 @@ static int at803x_config_init(struct phy
  		if (ret < 0)
  			return ret;
  	}
@@ -150,9 +150,9 @@ Signed-off-by: René van Dorst <opensource@vdorst.com>
  
  	/* The RX and TX delay default is:
  	 *   after HW reset: RX delay enabled and TX delay disabled
-@@ -925,6 +1003,10 @@ static int at803x_read_status(struct phy
+@@ -1109,6 +1187,10 @@ static int at803x_read_status(struct phy
  {
- 	int ss, err, old_link = phydev->link;
+ 	int err, old_link = phydev->link;
  
 +	/* Handle (Fiber) SGMII to RGMII mode */
 +	if (at803x_mode(phydev) == AT803X_MODE_FIBER)
@@ -161,7 +161,7 @@ Signed-off-by: René van Dorst <opensource@vdorst.com>
  	/* Update the link, but return if there was an error */
  	err = genphy_update_link(phydev);
  	if (err)
-@@ -1025,6 +1107,12 @@ static int at803x_config_aneg(struct phy
+@@ -1164,6 +1246,12 @@ static int at803x_config_aneg(struct phy
  {
  	int ret;
  
@@ -174,7 +174,7 @@ Signed-off-by: René van Dorst <opensource@vdorst.com>
  	ret = at803x_config_mdix(phydev, phydev->mdix_ctrl);
  	if (ret < 0)
  		return ret;
-@@ -1437,6 +1525,7 @@ static struct phy_driver at803x_driver[]
+@@ -1905,6 +1993,7 @@ static struct phy_driver at803x_driver[]
  	/* Qualcomm Atheros AR8031/AR8033 */
  	PHY_ID_MATCH_EXACT(ATH8031_PHY_ID),
  	.name			= "Qualcomm Atheros AR8031/AR8033",

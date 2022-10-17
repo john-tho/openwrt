@@ -15,8 +15,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 48 ++++++++++++++++++++++++++++++++++++++++
  1 file changed, 48 insertions(+)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index da710523b7c4..1418db4f2091 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
 @@ -223,6 +223,12 @@
@@ -32,7 +30,7 @@ index da710523b7c4..1418db4f2091 100644
  MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
  MODULE_AUTHOR("Matus Ujhelyi");
  MODULE_LICENSE("GPL");
-@@ -1569,6 +1575,26 @@ static int qca808x_phy_fast_retrain_config(struct phy_device *phydev)
+@@ -1561,6 +1567,26 @@ static int qca808x_phy_fast_retrain_conf
  	return 0;
  }
  
@@ -59,7 +57,7 @@ index da710523b7c4..1418db4f2091 100644
  static int qca808x_config_init(struct phy_device *phydev)
  {
  	int ret;
-@@ -1590,6 +1616,16 @@ static int qca808x_config_init(struct phy_device *phydev)
+@@ -1582,6 +1608,16 @@ static int qca808x_config_init(struct ph
  	if (ret)
  		return ret;
  
@@ -76,7 +74,7 @@ index da710523b7c4..1418db4f2091 100644
  	/* Configure adc threshold as 100mv for the link 10M */
  	return at803x_debug_reg_mask(phydev, QCA808X_PHY_DEBUG_ADC_THRESHOLD,
  			QCA808X_ADC_THRESHOLD_MASK, QCA808X_ADC_THRESHOLD_100MV);
-@@ -1622,6 +1658,17 @@ static int qca808x_read_status(struct phy_device *phydev)
+@@ -1614,6 +1650,17 @@ static int qca808x_read_status(struct ph
  	return 0;
  }
  
@@ -94,7 +92,7 @@ index da710523b7c4..1418db4f2091 100644
  static struct phy_driver at803x_driver[] = {
  {
  	/* Qualcomm Atheros AR8035 */
-@@ -1797,6 +1844,7 @@ static struct phy_driver at803x_driver[] = {
+@@ -1789,6 +1836,7 @@ static struct phy_driver at803x_driver[]
  	.resume			= genphy_resume,
  	.read_status		= qca808x_read_status,
  	.config_init		= qca808x_config_init,
@@ -102,6 +100,3 @@ index da710523b7c4..1418db4f2091 100644
  }, };
  
  module_phy_driver(at803x_driver);
--- 
-2.34.1
-

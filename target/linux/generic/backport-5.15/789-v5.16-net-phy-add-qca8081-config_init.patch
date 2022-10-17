@@ -15,8 +15,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 107 +++++++++++++++++++++++++++++++++++++++
  1 file changed, 107 insertions(+)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 70c1025e8e5d..da710523b7c4 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
 @@ -178,6 +178,51 @@
@@ -71,7 +69,7 @@ index 70c1025e8e5d..da710523b7c4 100644
  MODULE_DESCRIPTION("Qualcomm Atheros AR803x and QCA808X PHY driver");
  MODULE_AUTHOR("Matus Ujhelyi");
  MODULE_LICENSE("GPL");
-@@ -1489,6 +1534,67 @@ static int qca83xx_suspend(struct phy_device *phydev)
+@@ -1481,6 +1526,67 @@ static int qca83xx_suspend(struct phy_de
  	return 0;
  }
  
@@ -139,7 +137,7 @@ index 70c1025e8e5d..da710523b7c4 100644
  static int qca808x_read_status(struct phy_device *phydev)
  {
  	int ret;
-@@ -1690,6 +1796,7 @@ static struct phy_driver at803x_driver[] = {
+@@ -1682,6 +1788,7 @@ static struct phy_driver at803x_driver[]
  	.suspend		= genphy_suspend,
  	.resume			= genphy_resume,
  	.read_status		= qca808x_read_status,
@@ -147,6 +145,3 @@ index 70c1025e8e5d..da710523b7c4 100644
  }, };
  
  module_phy_driver(at803x_driver);
--- 
-2.34.1
-

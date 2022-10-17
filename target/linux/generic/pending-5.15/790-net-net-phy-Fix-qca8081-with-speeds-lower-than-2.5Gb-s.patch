@@ -69,11 +69,9 @@ Signed-off-by: Jonathan McDowell <noodles@earth.li>
  drivers/net/phy/at803x.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 5b6c0d120e09..7077e3a92d31 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -1691,7 +1691,7 @@ static int qca808x_read_status(struct phy_device *phydev)
+@@ -1683,7 +1683,7 @@ static int qca808x_read_status(struct ph
  	if (phydev->link && phydev->speed == SPEED_2500)
  		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
  	else

@@ -15,8 +15,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  include/uapi/linux/mdio.h | 9 +++++++++
  1 file changed, 9 insertions(+)
 
-diff --git a/include/uapi/linux/mdio.h b/include/uapi/linux/mdio.h
-index bdf77dffa5a4..c54e6eae5366 100644
 --- a/include/uapi/linux/mdio.h
 +++ b/include/uapi/linux/mdio.h
 @@ -53,12 +53,14 @@
@@ -62,6 +60,3 @@ index bdf77dffa5a4..c54e6eae5366 100644
  /* 2.5G/5G Extended abilities register. */
  #define MDIO_PMA_NG_EXTABLE_2_5GBT	0x0001	/* 2.5GBASET ability */
  #define MDIO_PMA_NG_EXTABLE_5GBT	0x0002	/* 5GBASET ability */
--- 
-2.34.1
-

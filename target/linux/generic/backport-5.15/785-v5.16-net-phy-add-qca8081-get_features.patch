@@ -13,11 +13,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 10 ++++++++++
  1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index cecf78e6c643..c4b7ac03cd35 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
-@@ -744,6 +744,15 @@ static int at803x_get_features(struct phy_device *phydev)
+@@ -726,6 +726,15 @@ static int at803x_get_features(struct ph
  	if (err)
  		return err;
  
@@ -33,7 +31,7 @@ index cecf78e6c643..c4b7ac03cd35 100644
  	if (phydev->drv->phy_id != ATH8031_PHY_ID)
  		return 0;
  
-@@ -1653,6 +1662,7 @@ static struct phy_driver at803x_driver[] = {
+@@ -1645,6 +1654,7 @@ static struct phy_driver at803x_driver[]
  	.set_tunable		= at803x_set_tunable,
  	.set_wol		= at803x_set_wol,
  	.get_wol		= at803x_get_wol,
@@ -41,6 +39,3 @@ index cecf78e6c643..c4b7ac03cd35 100644
  	.suspend		= genphy_suspend,
  	.resume			= genphy_resume,
  	.read_status		= qca808x_read_status,
--- 
-2.34.1
-

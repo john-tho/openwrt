@@ -17,8 +17,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 95 ++++++++++++++++++++++++++++++----------
  1 file changed, 73 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index aae27fe3e1e1..cecf78e6c643 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
 @@ -41,6 +41,9 @@
@@ -31,7 +29,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
  #define AT803X_INTR_ENABLE			0x12
  #define AT803X_INTR_ENABLE_AUTONEG_ERR		BIT(15)
  #define AT803X_INTR_ENABLE_SPEED_CHANGED	BIT(14)
-@@ -959,27 +962,9 @@ static void at803x_link_change_notify(struct phy_device *phydev)
+@@ -951,27 +954,9 @@ static void at803x_link_change_notify(st
  	}
  }
  
@@ -61,7 +59,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
  
  	/* Read the AT8035 PHY-Specific Status register, which indicates the
  	 * speed and duplex that the PHY is actually using, irrespective of
-@@ -990,13 +975,19 @@ static int at803x_read_status(struct phy_device *phydev)
+@@ -982,13 +967,19 @@ static int at803x_read_status(struct phy
  		return ss;
  
  	if (ss & AT803X_SS_SPEED_DUPLEX_RESOLVED) {
@@ -83,7 +81,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
  		case AT803X_SS_SPEED_10:
  			phydev->speed = SPEED_10;
  			break;
-@@ -1006,6 +997,9 @@ static int at803x_read_status(struct phy_device *phydev)
+@@ -998,6 +989,9 @@ static int at803x_read_status(struct phy
  		case AT803X_SS_SPEED_1000:
  			phydev->speed = SPEED_1000;
  			break;
@@ -93,7 +91,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
  		}
  		if (ss & AT803X_SS_DUPLEX)
  			phydev->duplex = DUPLEX_FULL;
-@@ -1030,6 +1024,35 @@ static int at803x_read_status(struct phy_device *phydev)
+@@ -1022,6 +1016,35 @@ static int at803x_read_status(struct phy
  		}
  	}
  
@@ -129,7 +127,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
  	if (phydev->autoneg == AUTONEG_ENABLE && phydev->autoneg_complete)
  		phy_resolve_aneg_pause(phydev);
  
-@@ -1434,6 +1457,33 @@ static int qca83xx_suspend(struct phy_device *phydev)
+@@ -1426,6 +1449,33 @@ static int qca83xx_suspend(struct phy_de
  	return 0;
  }
  
@@ -163,7 +161,7 @@ index aae27fe3e1e1..cecf78e6c643 100644
  static struct phy_driver at803x_driver[] = {
  {
  	/* Qualcomm Atheros AR8035 */
-@@ -1605,6 +1655,7 @@ static struct phy_driver at803x_driver[] = {
+@@ -1597,6 +1647,7 @@ static struct phy_driver at803x_driver[]
  	.get_wol		= at803x_get_wol,
  	.suspend		= genphy_suspend,
  	.resume			= genphy_resume,
@@ -171,6 +169,3 @@ index aae27fe3e1e1..cecf78e6c643 100644
  }, };
  
  module_phy_driver(at803x_driver);
--- 
-2.34.1
-

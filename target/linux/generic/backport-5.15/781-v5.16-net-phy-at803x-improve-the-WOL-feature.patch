@@ -19,8 +19,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 45 +++++++++++++++++++++++++++++++++-------
  1 file changed, 38 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index cf25cd428ffa..1363f12ba659 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
 @@ -70,6 +70,8 @@
@@ -32,7 +30,7 @@ index cf25cd428ffa..1363f12ba659 100644
  #define AT803X_LOC_MAC_ADDR_0_15_OFFSET		0x804C
  #define AT803X_LOC_MAC_ADDR_16_31_OFFSET	0x804B
  #define AT803X_LOC_MAC_ADDR_32_47_OFFSET	0x804A
-@@ -335,8 +337,7 @@ static int at803x_set_wol(struct phy_device *phydev,
+@@ -334,8 +336,7 @@ static int at803x_set_wol(struct phy_dev
  {
  	struct net_device *ndev = phydev->attached_dev;
  	const u8 *mac;
@@ -42,7 +40,7 @@ index cf25cd428ffa..1363f12ba659 100644
  	unsigned int i;
  	const unsigned int offsets[] = {
  		AT803X_LOC_MAC_ADDR_32_47_OFFSET,
-@@ -357,18 +358,45 @@ static int at803x_set_wol(struct phy_device *phydev,
+@@ -356,18 +357,45 @@ static int at803x_set_wol(struct phy_dev
  			phy_write_mmd(phydev, MDIO_MMD_PCS, offsets[i],
  				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
  
@@ -91,7 +89,7 @@ index cf25cd428ffa..1363f12ba659 100644
  }
  
  static void at803x_get_wol(struct phy_device *phydev,
-@@ -379,8 +407,11 @@ static void at803x_get_wol(struct phy_device *phydev,
+@@ -378,8 +406,11 @@ static void at803x_get_wol(struct phy_de
  	wol->supported = WAKE_MAGIC;
  	wol->wolopts = 0;
  
@@ -105,6 +103,3 @@ index cf25cd428ffa..1363f12ba659 100644
  		wol->wolopts |= WAKE_MAGIC;
  }
  
--- 
-2.34.1
-

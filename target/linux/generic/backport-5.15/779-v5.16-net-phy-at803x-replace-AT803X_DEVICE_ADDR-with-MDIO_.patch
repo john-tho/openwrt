@@ -14,8 +14,6 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  drivers/net/phy/at803x.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 69da011e82c8..d0f41cdaec75 100644
 --- a/drivers/net/phy/at803x.c
 +++ b/drivers/net/phy/at803x.c
 @@ -70,7 +70,6 @@
@@ -26,7 +24,7 @@ index 69da011e82c8..d0f41cdaec75 100644
  #define AT803X_LOC_MAC_ADDR_0_15_OFFSET		0x804C
  #define AT803X_LOC_MAC_ADDR_16_31_OFFSET	0x804B
  #define AT803X_LOC_MAC_ADDR_32_47_OFFSET	0x804A
-@@ -338,7 +337,8 @@ static int at803x_set_wol(struct phy_device *phydev,
+@@ -337,7 +336,8 @@ static int at803x_set_wol(struct phy_dev
  	const u8 *mac;
  	int ret;
  	u32 value;
@@ -36,7 +34,7 @@ index 69da011e82c8..d0f41cdaec75 100644
  		AT803X_LOC_MAC_ADDR_32_47_OFFSET,
  		AT803X_LOC_MAC_ADDR_16_31_OFFSET,
  		AT803X_LOC_MAC_ADDR_0_15_OFFSET,
-@@ -354,7 +354,7 @@ static int at803x_set_wol(struct phy_device *phydev,
+@@ -353,7 +353,7 @@ static int at803x_set_wol(struct phy_dev
  			return -EINVAL;
  
  		for (i = 0; i < 3; i++)
@@ -45,6 +43,3 @@ index 69da011e82c8..d0f41cdaec75 100644
  				      mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
  
  		value = phy_read(phydev, AT803X_INTR_ENABLE);
--- 
-2.34.1
-
