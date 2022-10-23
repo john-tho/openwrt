@@ -1079,13 +1079,21 @@ err_disable_vregs:
 	return ret;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0)
 static int aw9523_remove(struct i2c_client *client)
+#else
+static void aw9523_remove(struct i2c_client *client)
+#endif
 {
 	struct aw9523 *awi = i2c_get_clientdata(client);
 	int ret;
 
 	if (!awi)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0)
 		return 0;
+#else
+		return;
+#endif
 
 	/*
 	 * If the chip VIO is connected to a regulator that we can turn
@@ -1100,11 +1108,17 @@ static int aw9523_remove(struct i2c_client *client)
 		ret = aw9523_hw_init(awi);
 		mutex_unlock(&awi->i2c_lock);
 		if (ret)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0)
 			return ret;
+#else
+			return;
+#endif
 	}
 
 	mutex_destroy(&awi->i2c_lock);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 1, 0)
 	return 0;
+#endif
 }
 
 static const struct i2c_device_id aw9523_i2c_id_table[] = {
