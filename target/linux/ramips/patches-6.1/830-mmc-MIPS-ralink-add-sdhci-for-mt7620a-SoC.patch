@@ -25,10 +25,10 @@ Signed-off-by: John Crispin <blogic@openwrt.org>
 
 --- a/drivers/mmc/host/Kconfig
 +++ b/drivers/mmc/host/Kconfig
-@@ -1091,3 +1091,5 @@ config MMC_OWL
+@@ -1110,3 +1110,5 @@ config MMC_LITEX
+ 	  module will be called litex_mmc.
  
- config MMC_SDHCI_EXTERNAL_DMA
- 	bool
+ 	  If unsure, say N.
 +
 +source "drivers/mmc/host/mtk-mmc/Kconfig"
 --- a/drivers/mmc/host/Makefile
