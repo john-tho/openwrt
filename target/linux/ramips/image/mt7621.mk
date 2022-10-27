@@ -1377,6 +1377,9 @@ define Device/MikroTik
   DEVICE_PACKAGES := kmod-usb3
   KERNEL_NAME := vmlinuz
   KERNEL := kernel-bin | append-dtb-elf
+  LOADER_TYPE := elf
+  KERNEL_INITRAMFS_NAME := vmlinux-initramfs
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | loader-kernel
   IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 | \
 	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | check-size | \
 	append-metadata
