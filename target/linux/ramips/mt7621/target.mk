@@ -12,6 +12,9 @@ IMAGES_DIR:=../../..
 
 DEFAULT_PACKAGES += wpad-basic-wolfssl
 
+KERNEL_PATCHVER:=5.15
+KERNEL_TESTING_PATCHVER:=6.1
+
 define Target/Description
 	Build firmware images for Ralink MT7621 based boards.
 endef
