@@ -1,0 +1,23 @@
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -615,6 +615,7 @@ config RALINK
+ 	select SYS_SUPPORTS_LITTLE_ENDIAN
+ 	select SYS_SUPPORTS_MIPS16
+ 	select SYS_SUPPORTS_ZBOOT
++	select SYS_SUPPORTS_ZBOOT_UART_PROM
+ 	select SYS_HAS_EARLY_PRINTK
+ 	select ARCH_HAS_RESET_CONTROLLER
+ 	select RESET_CONTROLLER
+--- a/arch/mips/boot/compressed/uart-prom.c
++++ b/arch/mips/boot/compressed/uart-prom.c
+@@ -1,6 +1,10 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <asm/setup.h>
+ 
++#if defined(CONFIG_RALINK)
++#include "../../ralink/early_printk.c"
++#endif
++
+ void putc(char c)
+ {
+ 	prom_putchar(c);
