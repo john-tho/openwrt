@@ -14,6 +14,10 @@ ifdef CONFIG_LINUX_5_10
   DTS_CPPFLAGS += -DDTS_LEGACY
 endif
 
+ifdef CONFIG_LINUX_5_15
+  DTS_CPPFLAGS += -DDTS_LEGACY_5_15
+endif
+
 define Build/arcadyan-trx
 	echo -ne "hsqs" > $@.hsqs
 	$(eval trx_magic=$(word 1,$(1)))

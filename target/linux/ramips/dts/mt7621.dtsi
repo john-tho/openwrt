@@ -265,7 +265,11 @@
 	};
 
 	pinctrl: pinctrl {
+#ifdef DTS_LEGACY_5_15
 		compatible = "ralink,rt2880-pinmux";
+#else
+		compatible = "ralink,mt7621-pinctrl";
+#endif
 		pinctrl-names = "default";
 		pinctrl-0 = <&state_default>;
 
