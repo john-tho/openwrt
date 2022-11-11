@@ -36,6 +36,28 @@ define AddDepends/usb
 endef
 
 
+define KernelPackage/usb-conn-gpio
+  TITLE:=USB GPIO based connection detection driver
+  KCONFIG:=CONFIG_USB_CONN_GPIO
+  DEPENDS:=@GPIO_SUPPORT \
+	   @POWER_SUPPLY_SUPPORT \
+	   +kmod-usb-roles
+  FILES:=$(LINUX_DIR)/drivers/usb/common/usb-conn-gpio.ko
+  AUTOLOAD:=$(call AutoLoad,21,usb-conn-gpio,1)
+  $(call AddDepends/usb)
+endef
+
+define KernelPackage/usb-conn-gpio/description
+  USB GPIO based connection detection driver
+  Used for USB role switch detection.
+  Can allow a USB connector and port to be defined with a vbus-supply
+  regulator, where driver is otherwise not a regulator consumer.
+  requires CONFIG_POWER_SUPPLY (built in)
+endef
+
+$(eval $(call KernelPackage,usb-conn-gpio))
+
+
 define KernelPackage/usb-ledtrig-usbport
   TITLE:=LED trigger for USB ports
   KCONFIG:=CONFIG_USB_LEDS_TRIGGER_USBPORT
