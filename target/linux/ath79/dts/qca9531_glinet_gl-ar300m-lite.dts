@@ -9,6 +9,8 @@
 	model = "GL.iNet GL-AR300M-Lite";
 };
 
+/delete-node/ &reg_usb_vbus;
+/delete-node/ &connector_usb;
 
 /delete-node/ &nand_flash;
 
@@ -33,3 +35,6 @@
 	color = <LED_COLOR_ID_GREEN>;
 };
 
+&usb0 {
+	/delete-node/ usb_hub_p0_ep;
+};
