@@ -45,6 +45,21 @@
 		regulator-max-microvolt = <5000000>;
 		gpio = <&gpio 2 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
+		regulator-boot-on;
+	};
+
+	connector_usb {
+		compatible = "gpio-usb-b-connector", "usb-b-connector";
+
+		/* fake ID GPIO which is always LOW sets USB role to HOST */
+		id-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
+		vbus-supply = <&reg_usb_vbus>;
+
+		port {
+			connector_usb_ep: endpoint {
+				remote-endpoint = <&usb_hub_p0_ep>;
+			};
+		};
 	};
 
 	leds {
@@ -142,8 +157,13 @@
 };
 
 &usb0 {
-	vbus-supply = <&reg_usb_vbus>;
 	status = "okay";
+};
+
+&hub_port0 {
+	usb_hub_p0_ep: endpoint {
+		remote-endpoint = <&connector_usb_ep>;
+	};
 };
 
 &usb_phy {

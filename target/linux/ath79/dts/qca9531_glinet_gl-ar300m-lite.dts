@@ -8,6 +8,7 @@
 };
 
 /delete-node/ &reg_usb_vbus;
+/delete-node/ &connector_usb;
 
 /delete-node/ &nand_flash;
 
@@ -31,5 +32,5 @@
 };
 
 &usb0 {
-	/delete-property/ vbus-supply;
+	/delete-node/ usb_hub_p0_ep;
 };

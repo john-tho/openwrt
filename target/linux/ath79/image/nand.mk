@@ -128,7 +128,7 @@ define Device/glinet_gl-ar300m-common-nand
   SOC := qca9531
   DEVICE_VENDOR := GL.iNet
   DEVICE_MODEL := GL-AR300M
-  DEVICE_PACKAGES := kmod-usb2
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-conn-gpio
   KERNEL_SIZE := 4096k
   IMAGE_SIZE := 16000k
   PAGESIZE := 2048
