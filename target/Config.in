@@ -119,6 +119,9 @@ config USES_ROOTFS_PART
 config USES_BOOT_PART
 	bool
 
+config POWER_SUPPLY_SUPPORT
+	bool
+
 # Architecture selection
 
 config aarch64
