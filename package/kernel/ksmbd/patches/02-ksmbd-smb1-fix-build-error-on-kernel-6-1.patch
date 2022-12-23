@@ -1,0 +1,30 @@
+From 82477bc639c38a71784fe155f691f8e9f482fe50 Mon Sep 17 00:00:00 2001
+From: Chukun Pan <amadeus@jmu.edu.cn>
+Date: Thu, 15 Dec 2022 15:10:09 +0800
+Subject: [PATCH] ksmbd: smb1: fix build error on kernel 6.1
+
+This fixes the following error:
+smb1pdu.c:5964:50: error: passing argument 2 of 'set_ctx_actor'
+from incompatible pointer type [-Werror=incompatible-pointer-types]
+5964 | set_ctx_actor(&dir_fp->readdir_data.ctx, ksmbd_fill_dirent);
+
+Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+---
+ smb1pdu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+--- a/smb1pdu.c
++++ b/smb1pdu.c
+@@ -5851,7 +5851,11 @@ static int smb_populate_readdir_entry(st
+  *
+  * Return:	0 on success, otherwise -EINVAL
+  */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
++static bool ksmbd_fill_dirent(struct dir_context *ctx, const char *name, int namlen,
++#else
+ static int ksmbd_fill_dirent(struct dir_context *ctx, const char *name, int namlen,
++#endif
+ 		loff_t offset, u64 ino, unsigned int d_type)
+ {
+ 	struct ksmbd_readdir_data *buf =
