@@ -353,9 +353,24 @@ define KernelPackage/fs-ksmbd-intree
   SUBMENU:=$(FS_MENU)
   TITLE:=SMB kernel server support
   PROVIDES:=kmod-fs-ksmbd
-  DEPENDS:=+kmod-asn1-decoder +kmod-oid-registry @!LINUX_5_10
+  DEPENDS:= \
+	    +kmod-fs-smbfs-common \
+	    +kmod-nls-base \
+	    +kmod-nls-utf8 \
+	    +kmod-crypto-md5 \
+	    +kmod-crypto-hmac \
+	    +kmod-crypto-ecb \
+	    +kmod-crypto-des \
+	    +kmod-crypto-sha256 \
+	    +kmod-crypto-cmac \
+	    +kmod-crypto-sha512 \
+	    +kmod-crypto-aead \
+	    +kmod-crypto-ccm \
+	    +kmod-crypto-gcm \
+	    +kmod-asn1-decoder \
+	    +kmod-oid-registry
   KCONFIG:= \
-	CONFIG_SMB_SERVER=y \
+	CONFIG_SMB_SERVER \
 	CONFIG_SMB_SERVER_SMBDIRECT=n \
 	CONFIG_SMB_SERVER_CHECK_CAP_NET_ADMIN=n \
 	CONFIG_SMB_SERVER_KERBEROS5=n
