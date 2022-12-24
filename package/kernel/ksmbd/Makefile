@@ -17,11 +17,13 @@ include $(INCLUDE_DIR)/package.mk
 TAR_OPTIONS+= --strip-components 1
 TAR_CMD=$(HOST_TAR) -C $(1) $(TAR_OPTIONS)
 
-define KernelPackage/fs-ksmbd
+define KernelPackage/fs-ksmbd-external
 	SUBMENU:=Filesystems
 	TITLE:=SMB kernel server support
 	URL:=https://github.com/cifsd-team/cifsd
 	FILES:=$(PKG_BUILD_DIR)/ksmbd.ko
+	PROVIDES:=kmod-fs-ksmbd
+	CONFLICTS:=kmod-fs-ksmbd kmod-fs-ksmbd-intree
 	DEPENDS:= \
 		+kmod-nls-base \
 		+kmod-nls-utf8 \
@@ -43,15 +45,15 @@ endef
 # The last two DEPENDS are hacks in order to get CONFIG_ASN1 and CONFIG_OID_REGISTRY
 # which it seems can't be selected independently. Some bug in either base or upstream.
 
-define KernelPackage/fs-ksmbd/description
+define KernelPackage/fs-ksmbd-external/description
   Ksmbd is an In-kernel SMBv(1)2/3 fileserver.
   It's an implementation of the SMB protocol in kernel space for sharing files and IPC services over network.
 endef
 
-define KernelPackage/fs-ksmbd/config
+define KernelPackage/fs-ksmbd-external/config
 config KSMBD_SMB_INSECURE_SERVER
 	bool "Support for insecure SMB1/CIFS and SMB2.0 protocols"
-	depends on PACKAGE_kmod-fs-ksmbd
+	depends on PACKAGE_kmod-fs-ksmbd-external
 	help
 		This enables deprecated insecure protocols dialects: SMB1/CIFS and SMB2.0.
 	default y
@@ -70,4 +72,4 @@ define Build/Compile
 	modules
 endef
 
-$(eval $(call KernelPackage,fs-ksmbd))
+$(eval $(call KernelPackage,fs-ksmbd-external))
