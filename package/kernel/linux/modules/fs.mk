@@ -113,7 +113,7 @@ define KernelPackage/fs-cifs
   AUTOLOAD:=$(call AutoLoad,30,cifs)
   $(call AddDepends/nls)
   DEPENDS+= \
-    +LINUX_5_15:kmod-fs-smbfs-common \
+    +(LINUX_5_15||LINUX_6_1):kmod-fs-smbfs-common \
     +LINUX_5_10:kmod-crypto-md4\
     +kmod-crypto-md5 \
     +kmod-crypto-sha256 \
@@ -358,7 +358,7 @@ define KernelPackage/fs-ksmbd-intree
   CONFLICTS:=kmod-fs-ksmbd
   DEPENDS:= \
 	    @!LINUX_5_10 \
-	    +LINUX_5_15:kmod-fs-smbfs-common \
+	    +(LINUX_5_15||LINUX_6_1):kmod-fs-smbfs-common \
 	    +kmod-nls-base \
 	    +kmod-nls-utf8 \
 	    +kmod-crypto-md5 \
