@@ -345,6 +345,18 @@ jobs:
         working-directory: openwrt
         run: make target/compile -j$(nproc) BUILD_LOG=1 || ret=$? .github/workflows/scripts/show_build_failures.sh
 
+      - name: Show built kernel sizes
+        if: inputs.build_kernel == true
+        working-directory: openwrt
+        run: |
+          find build_dir -maxdepth 8 \
+          -path 'build_dir/host*' -prune \
+          -path 'build_dir/toolchain*' -prune \
+          -path 'build_dir/target-*/linux-*/linux-atm*' -prune \
+          -path 'build_dir/target-*/linux-*/linux-*/drivers*' -prune -or \( \
+          -name 'vmlinux' -or -name 'vmlinuz' -or -name 'vmlinux.o' \) \
+          -printf "%s %P\n"
+
       - name: Build Kernel Kmods
         if: inputs.build_kernel == true
         shell: su buildbot -c "sh -e {0}"
@@ -356,6 +368,18 @@ jobs:
         shell: su buildbot -c "sh -e {0}"
         working-directory: openwrt
         run: make -j$(nproc) BUILD_LOG=1 || ret=$? .github/workflows/scripts/show_build_failures.sh
+
+      - name: Show image sizes
+        if: inputs.build_full == true
+        working-directory: openwrt
+        run: |
+          find build_dir -maxdepth 4 \
+          -path 'build_dir/host*' -prune \
+          -path 'build_dir/toolchain*' -prune \
+          -path 'build_dir/target-*/linux-*/linux-*' -prune -or \
+          -name '*.bin' \( \
+          -name '*kernel*' -or -name 'openwrt*' \
+          \) -printf "%s %P\n"
 
       - name: Upload logs
         if: failure()
