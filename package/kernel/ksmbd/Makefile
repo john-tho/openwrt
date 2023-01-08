@@ -25,6 +25,7 @@ define KernelPackage/fs-ksmbd-external
 	PROVIDES:=kmod-fs-ksmbd
 	CONFLICTS:=kmod-fs-ksmbd-intree
 	DEPENDS:= \
+		@LINUX_5_10 \
 		+kmod-nls-base \
 		+kmod-nls-utf8 \
 		+kmod-crypto-md4 \
