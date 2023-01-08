@@ -348,11 +348,21 @@ endef
 
 $(eval $(call KernelPackage,fs-jfs))
 
+define KernelPackage/fs-ksmbd
+  SUBMENU:=$(FS_MENU)
+  TITLE:=SMB kernel server virtual package
+  HIDDEN:=1
+  DEPENDS:= \
+	    +LINUX_5_10:kmod-fs-ksmbd-external \
+	    +(LINUX_5_15||LINUX_6_1):kmod-fs-ksmbd-intree
+endef
+
+$(eval $(call KernelPackage,fs-ksmbd))
+
 
 define KernelPackage/fs-ksmbd-intree
   SUBMENU:=$(FS_MENU)
   TITLE:=SMB kernel server support
-  PROVIDES:=kmod-fs-ksmbd
   DEPENDS:= \
 	    +kmod-fs-smbfs-common \
 	    +kmod-nls-base \

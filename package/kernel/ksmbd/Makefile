@@ -22,7 +22,6 @@ define KernelPackage/fs-ksmbd-external
 	TITLE:=SMB kernel server support
 	URL:=https://github.com/cifsd-team/cifsd
 	FILES:=$(PKG_BUILD_DIR)/ksmbd.ko
-	PROVIDES:=kmod-fs-ksmbd
 	CONFLICTS:=kmod-fs-ksmbd-intree
 	DEPENDS:= \
 		@LINUX_5_10 \
