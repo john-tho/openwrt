@@ -9,6 +9,10 @@
 	compatible = "mikrotik,routerboard-wap-g-5hact2hnd", "qca,qca9556";
 	model = "MikroTik RouterBOARD wAP G-5HacT2HnD";
 
+	chosen {
+		bootargs = "console=ttyS0,115200n8 dyndbg=\"file drivers/net/phy/at803x.c +p\"";
+	};
+
 	aliases {
 		mdio-gpio1 = &mdio2;
 	};
