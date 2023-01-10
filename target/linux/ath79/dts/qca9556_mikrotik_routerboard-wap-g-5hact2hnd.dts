@@ -112,6 +112,13 @@
 			};
 		};
 	};
+
+	zt2046@2 {
+		reg = <2>;
+		spi-max-frequency = <2000000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinmux_spi_cs2>;
+	};
 };
 
 &wmac {
@@ -126,5 +133,18 @@
 	wifi@0,0 {
 		compatible = "qcom,ath10k";
 		reg = <0 0 0 0 0>;
+	};
+};
+
+&pinmux {
+	pinmux_spi_cs2: pinmux_spi_cs2 {
+		/* set SoC GPIOs functions
+		 * each GPIO output function register holds 4 gpios,
+		 * 8 bits per GPIO
+		 * GPIO17 at register 0x1804003c (offset 0x10)
+		 * to function 0xb (CS2),
+		 * with mask 0x0000ff00 (do not alter GPIOS 16,18,19)
+		 */
+		pinctrl-single,bits = <((17>>4)*4) (0xb<<((17%4)*8)) (0xff<<((17%4)*8))>;
 	};
 };
