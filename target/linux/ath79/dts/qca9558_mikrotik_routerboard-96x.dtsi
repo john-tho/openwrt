@@ -13,6 +13,10 @@
 		led-upgrade = &led_user;
 	};
 
+	chosen {
+		bootargs = "console=ttyS0,115200n8 sfp.dyndbg=\"+p\" dyndbg=\"file drivers/net/* +p; module sfp +p\"";
+	};
+
 	leds {
 		compatible = "gpio-leds";
 
