@@ -4,6 +4,7 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/interrupt-controller/irq.h>
 
 / {
 	aliases {
@@ -126,9 +127,13 @@
 
 	zt2046@2 {
 		reg = <2>;
+		compatible = "zt2046q", "ti,ads7846";
 		spi-max-frequency = <2000000>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinmux_spi_cs2>;
+		/* driver needs irq & pendown. supply dummies */
+		interrupts-extended = <&gpio 22 IRQ_TYPE_NONE>;
+		pendown-gpio = <&gpio 23 GPIO_ACTIVE_LOW>;
 	};
 };
 
