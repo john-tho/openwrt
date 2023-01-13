@@ -5,6 +5,7 @@
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/clock/ath79-clk.h>
 
 / {
 	aliases {
@@ -164,16 +165,22 @@
 &eth0 {
 	status = "okay";
 
+	tx-internal-delay-ps = <3000>;
+
 	phy-handle = <&phy0>;
 	/* gigabit pll-data from vendor firmware
 	 * TX_INVERT, TX_DELAY=3, GIGE, OFFSET_PHASE
 	 */
 	pll-data = <0x8f000000 0x00000101 0x00001616>;
 
+	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_MDIO>;
+	clock-names = "eth", "mdio";
+
 	gmac-config {
 		device = <&gmac>;
 		rgmii-enabled = <1>;
 	};
+
 };
 
 &mdio1 {
@@ -193,6 +200,9 @@
 	pll-data = <0x03000000 0x00000101 0x00001616>;
 	qca955x-sgmii-fixup;
 
+	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_MDIO>;
+	clock-names = "eth", "mdio";
+
 	gmac-config {
 		device = <&gmac>;
 	};
@@ -201,6 +211,7 @@
 		speed = <1000>;
 		full-duplex;
 	};
+
 };
 
 &usb0 {
