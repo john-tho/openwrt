@@ -14,7 +14,7 @@
 	};
 
 	chosen {
-		bootargs = "console=ttyS0,115200n8 sfp.dyndbg=\"+p\" dyndbg=\"file drivers/net/* +p; module sfp +p; file drivers/net/atheros/* +p\"";
+		bootargs = "console=ttyS0,115200n8 sfp.dyndbg=\"+p\" dyndbg=\"file drivers/net/* +p; module sfp +p; file drivers/net/atheros/* +p; file drivers/net/phy/phylink.c +p; file drivers/net/phy* +p\"";
 	};
 
 	leds {
