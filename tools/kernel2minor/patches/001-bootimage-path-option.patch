@@ -1,0 +1,55 @@
+--- a/kernel2minor.c
++++ b/kernel2minor.c
+@@ -38,6 +38,7 @@ static int info_block_size = 0;
+ #define INFO_BLOCK_VAR_LEN 8
+ //имя файла ядра в файловой система yaffs2
+ #define KERNEl_YAFFS_FILE_NAME "kernel"
++#define BOOTIMAGE_YAFFS_FILE_NAME "bootimage"
+ /* размер блока данных по которому считается ECC. для yaffs2 это 256 */
+ #define ECC_BLOCK_SIZE 256
+ 
+@@ -56,6 +57,7 @@ int verbose = 0; //говорливос�
+ //добавить к образу блок с данными описывающими его параметры(размер, blocksize, chunksize, etc...)
+ int add_image_info_block = 0; //это нужно для образов используемых перепрошивальщиком openwrt(для nand флешей)
+ int align_size = 0; //нужно для openwrt-шного sysupgrade-а. размер блока который будет добавлен к нам сторонним скриптом(sysupgrade-ом)
++int use_bootimage = 0;
+ 
+ //параметры для создаваемой нами файловой системы yaffs2. рассчитываются ф-ей calc_needed_vars.
+ static int chunk_data_size = 0;
+@@ -83,6 +85,7 @@ void print_help(void){
+       "-s", "FLASH Unit(Chunk) size", chunk_size_str,
+       "-i", "Add image info block", add_image_info_block ? info_block_size_str : "No",
+       "-p", "Platform name", platform_name_str,
++      "-b", "Use \"bootimage\" for packed file name", "",
+       "-v", "Verbose output", verbose ? "Yes" : "No",
+       "-h", "Show help and exit", "" };
+   printf("Version := %s\nUsage:\n", PROGRAM_VERSION);
+@@ -365,7 +368,10 @@ int fill_and_write_obj_header(int r, int
+   memset(buf, 0xff, buf_size);
+   verb_printf("%u: Writing chunk = 0 for obj(%u) HEADER, seq = %u\n", (*n)++, obj_id, seq_number);
+   //заполним заголовок объекта
+-  cook_object_header(buf, KERNEl_YAFFS_FILE_NAME);
++  if (use_bootimage)
++  	cook_object_header(buf, BOOTIMAGE_YAFFS_FILE_NAME);
++  else
++  	cook_object_header(buf, KERNEl_YAFFS_FILE_NAME);
+   //заполним данные tags + ecc(oob part)
+   cook_tags(buf, buf_size, chunk_data_size, obj_id, seq_number, chunk_id, n_bytes, 1);
+   len = write(r, buf, buf_size);
+@@ -592,7 +598,7 @@ int main(int argc, char *argv[]){
+   int r = 0;
+   int ch; //для парсинга параметров
+   //загружаем параметры командной строки
+-  while( (ch = getopt(argc, argv, "k:r:s:i:p:cevh")) != -1){
++  while( (ch = getopt(argc, argv, "k:r:s:i:p:cebvh")) != -1){
+     switch(ch){
+       case 'k': snprintf(kernel_file, sizeof(kernel_file) - 1, "%s", optarg); break;
+       case 'r': snprintf(res_file, sizeof(res_file) - 1, "%s", optarg); break;
+@@ -601,6 +607,7 @@ int main(int argc, char *argv[]){
+       case 's': chunk_size = atoi(optarg); break;
+       case 'i': add_image_info_block = 1; align_size = atoi(optarg); break;
+       case 'p': strncpy(platform_name, optarg, sizeof(platform_name)); break;
++      case 'b': use_bootimage = 1; break;
+       case 'v': verbose = 1; break;
+       case 'h': print_help(); exit(0); break;
+     }
