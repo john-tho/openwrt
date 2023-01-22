@@ -383,6 +383,11 @@ define Build/kernel-bin
 	cp $< $@
 endef
 
+define Build/kernel-pack-npk
+	sh -c 'source $(STAGING_DIR_HOST)/share/npkpy-venv/bin/activate; python $(STAGING_DIR_HOST)/share/npkpy-venv/bin/pack_npk_kernel.py --kernel $@ --output $@.npk'
+	mv $@.npk $@
+endef
+
 define Build/linksys-image
 	$(TOPDIR)/scripts/linksys-image.sh \
 		"$(call param_get_default,type,$(1),$(DEVICE_NAME))" \
