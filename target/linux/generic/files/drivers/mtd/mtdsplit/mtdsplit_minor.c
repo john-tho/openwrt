@@ -35,6 +35,7 @@
 #define YAFFS_OBJECTID_ROOT	0x1
 #define YAFFS_SUM_UNUSED	0xFFFF
 #define YAFFS_NAME		"kernel"
+#define YAFFS_NAME_BOOTIMAGE	"bootimage"
 
 #define MINOR_NR_PARTS		2
 
@@ -77,7 +78,8 @@ static int mtdsplit_parse_minor(struct mtd_info *master,
 	if (hdr.yaffs_sum_unused != YAFFS_SUM_UNUSED)
 		return -EINVAL;
 
-	if (memcmp(hdr.yaffs_name, YAFFS_NAME, sizeof(YAFFS_NAME)))
+	if ((memcmp(hdr.yaffs_name, YAFFS_NAME, sizeof(YAFFS_NAME)) != 0) &&
+			(memcmp(hdr.yaffs_name, YAFFS_NAME_BOOTIMAGE, sizeof(YAFFS_NAME)) != 0))
 		return -EINVAL;
 
 	err = mtd_find_rootfs_from(master, master->erasesize, master->size,
