@@ -129,6 +129,7 @@ TARGET_DEVICES += mikrotik_routerboard-952ui-5ac2nd
 
 define Device/mikrotik_routerboard-962uigs-5hact2hnt
   $(Device/mikrotik_nor)
+  $(Device/mikrotik_nor_yafut)
   SOC := qca9558
   DEVICE_MODEL := RouterBOARD 962UiGS-5HacT2HnT (hAP ac)
   DEVICE_PACKAGES += kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2 \

@@ -19,6 +19,17 @@ define Device/mikrotik_nor
 	  append-rootfs | pad-rootfs | check-size | append-metadata
 endef
 
+define Device/mikrotik_nor_yafut
+  $(Device/mikrotik)
+  DEVICE_PACKAGES := yafut
+  IMAGES += sysupgrade-yafut.bin
+  IMAGE/sysupgrade-yafut.bin := append-kernel | sysupgrade-tar | append-metadata
+
+  IMAGES += sysupgrade-yafut-v7.bin
+  IMAGE/sysupgrade-yafut-v7.bin := append-kernel | kernel-pack-npk | \
+	  sysupgrade-tar | append-metadata
+endef
+
 define Device/mikrotik_nand
   $(Device/mikrotik)
   IMAGE/sysupgrade.bin = append-kernel | sysupgrade-tar | append-metadata
