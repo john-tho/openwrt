@@ -229,3 +229,38 @@ define KernelPackage/input-uinput/description
 endef
 
 $(eval $(call KernelPackage,input-uinput))
+
+
+define KernelPackage/serio
+  SUBMENU:=$(INPUT_MODULES_MENU)
+  TITLE:=Serial I/O support
+  KCONFIG:= \
+	CONFIG_SERIO
+  FILES:=$(LINUX_DIR)/drivers/input/serio/serio.ko
+  AUTOLOAD:=$(call AutoProbe,serio)
+endef
+
+define KernelPackage/serio/description
+  Support core for any input device that uses serial I/O to
+  communicate with the system.
+endef
+
+$(eval $(call KernelPackage,serio))
+
+
+define KernelPackage/serio-serport
+  SUBMENU:=$(INPUT_MODULES_MENU)
+  TITLE:=Input via Serial I/O support
+  DEPENDS:=+kmod-serio
+  KCONFIG:= \
+	CONFIG_SERIO_SERPORT
+  FILES:=$(LINUX_DIR)/drivers/input/serio/serport.ko
+  AUTOLOAD:=$(call AutoProbe,serport)
+endef
+
+define KernelPackage/serio-serport/description
+  Support core for any input device that uses serial I/O to
+  communicate with the system.
+endef
+
+$(eval $(call KernelPackage,serio-serport))
