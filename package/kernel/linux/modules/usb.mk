@@ -1946,3 +1946,24 @@ endef
 
 $(eval $(call KernelPackage,chaoskey))
 
+
+define KernelPackage/usb-pulse8-cec
+  SUBMENU:=$(USB_MENU)
+  TITLE:=Pulse Eight HDMI CEC device support
+  DEPENDS:=\
+	   +kmod-cec-core \
+	   +kmod-usb-core \
+	   +kmod-usb-acm \
+	   +kmod-serio \
+	   +kmod-serio-serport
+  KCONFIG:=CONFIG_USB_PULSE8_CEC
+  FILES:=$(LINUX_DIR)/drivers/media/cec/usb/pulse8/pulse8-cec.ko
+  AUTOLOAD:=$(call AutoProbe,pulse8-cec)
+  $(call AddDepends/usb)
+endef
+
+define KernelPackage/usb-pulse8-cec/description
+  A cec driver for the Pulse Eight HDMI CEC device.
+endef
+
+$(eval $(call KernelPackage,usb-pulse8-cec))

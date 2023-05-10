@@ -504,6 +504,39 @@ endef
 
 $(eval $(call KernelPackage,drm-radeon))
 
+define KernelPackage/media-support
+  SUBMENU:=$(VIDEO_MENU)
+  TITLE=Multimedia support
+  KCONFIG:= \
+	CONFIG_MEDIA_SUPPORT
+endef
+
+define KernelPackage/media-support/description
+ Virtual package to select CONFIG_MEDIA_SUPPORT
+endef
+
+$(eval $(call KernelPackage,media-support))
+
+
+define KernelPackage/cec-core
+  SUBMENU:=$(VIDEO_MENU)
+  TITLE=HDMI CEC drivers support
+  DEPENDS:=+kmod-media-support
+  KCONFIG:= \
+	CONFIG_MEDIA_CEC_SUPPORT=y \
+	CONFIG_CEC_CORE
+  FILES:= \
+	$(LINUX_DIR)/drivers/media/cec/core/cec.ko
+  AUTOLOAD:=$(call AutoLoad,60,cec)
+endef
+
+define KernelPackage/cec-core/description
+ HDMI CEC core
+endef
+
+$(eval $(call KernelPackage,cec-core))
+
+
 #
 # Video Capture
 #
@@ -511,9 +544,8 @@ $(eval $(call KernelPackage,drm-radeon))
 define KernelPackage/video-core
   SUBMENU:=$(VIDEO_MENU)
   TITLE=Video4Linux support
-  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core
+  DEPENDS:=+PACKAGE_kmod-i2c-core:kmod-i2c-core +kmod-media-support
   KCONFIG:= \
-	CONFIG_MEDIA_SUPPORT \
 	CONFIG_MEDIA_CAMERA_SUPPORT=y \
 	CONFIG_VIDEO_DEV \
 	CONFIG_V4L_PLATFORM_DRIVERS=y \
