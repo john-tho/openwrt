@@ -60,6 +60,7 @@ ipq40xx_setup_interfaces()
 	extreme-networks,ws-ap3915i|\
 	meraki,mr33|\
 	meraki,mr74|\
+	mikrotik,d23-dk|\
 	mikrotik,lhgg-60ad|\
 	mikrotik,sxtsq-5-ac|\
 	netgear,ex6100v2|\

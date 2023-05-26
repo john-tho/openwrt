@@ -43,6 +43,18 @@ define Device/mikrotik_cap-ac
 endef
 TARGET_DEVICES += mikrotik_cap-ac
 
+define Device/mikrotik_d23-dk
+	$(call Device/mikrotik_nor)
+	DEVICE_MODEL := d23-dk
+	DEVICE_ALT0_VENDOR := Mikrotik
+	DEVICE_ALT0_MODEL := mANTBox 52 15s
+	DEVICE_ALT1_VENDOR := Mikrotik
+	DEVICE_ALT1_MODEL := netMetal ac2
+	SOC := qcom-ipq4019
+	DEVICE_PACKAGES := kmod-sfp kmod-i2c-gpio
+endef
+TARGET_DEVICES += mikrotik_d23-dk
+
 define Device/mikrotik_hap-ac2
 	$(call Device/mikrotik_nor)
 	DEVICE_MODEL := hAP ac2
