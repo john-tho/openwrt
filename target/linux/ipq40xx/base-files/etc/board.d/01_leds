@@ -67,6 +67,15 @@ mikrotik,cap-ac)
 	ucidef_set_led_wlan "wlan2g" "WLAN2G" "green:wlan2g" "phy0tpt"
 	ucidef_set_led_wlan "wlan5g" "WLAN5G" "green:wlan5g" "phy1tpt"
 	;;
+mikrotik,d23-dk)
+	ucidef_set_led_netdev "ethernet" "LAN" "green:ethernet" "lan"
+	ucidef_set_led_netdev "sfp" "SFP" "green:sfp" "sfp"
+	ucidef_set_led_rssi "wifi1" "wifi1" "green:wifi1" "wlan0" "1" "100"
+	ucidef_set_led_rssi "wifi2" "wifi2" "green:wifi2" "wlan0" "21" "100"
+	ucidef_set_led_rssi "wifi3" "wifi3" "green:wifi3" "wlan0" "41" "100"
+	ucidef_set_led_rssi "wifi4" "wifi4" "green:wifi4" "wlan0" "61" "100"
+	ucidef_set_led_rssi "wifi5" "wifi5" "green:wifi5" "wlan0" "81" "100"
+	;;
 mikrotik,hap-ac3)
 	ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth0"
 	ucidef_set_led_netdev "lan1" "LAN1" "green:lan1" "lan1"
