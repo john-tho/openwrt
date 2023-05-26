@@ -1,0 +1,326 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/* Copyright (c) 2020, Robert Marko <robimarko@gmail.com> */
+
+#include "qcom-ipq4019.dtsi"
+#include "qcom-ipq4019-mikrotik_nor.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/soc/qcom,tcsr.h>
+
+/ {
+	model = "MikroTik d23-dk";
+	compatible = "mikrotik,d23-dk";
+
+	memory {
+		device_type = "memory";
+		reg = <0x80000000 0x10000000>;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	aliases {
+		led-boot = &led_power;
+		led-failsafe = &led_power;
+		led-running = &led_power;
+		led-upgrade = &led_power;
+		label-mac-device = &gmac;
+	};
+
+	soc {
+		tcsr@1949000 {
+			compatible = "qcom,tcsr";
+			reg = <0x1949000 0x100>;
+			qcom,wifi_glb_cfg = <TCSR_WIFI_GLB_CFG>;
+		};
+
+		tcsr@194b000 {
+			status = "okay";
+			/* select hostmode */
+			compatible = "qcom,tcsr";
+			reg = <0x194b000 0x100>;
+			qcom,usb-hsphy-mode-select = <TCSR_USB_HSPHY_HOST_MODE>;
+		};
+
+		ess_tcsr@1953000 {
+			compatible = "qcom,tcsr";
+			reg = <0x1953000 0x1000>;
+			qcom,ess-interface-select = <TCSR_ESS_PSGMII>;
+		};
+
+		tcsr@1957000 {
+			compatible = "qcom,tcsr";
+			reg = <0x1957000 0x100>;
+			qcom,wifi_noc_memtype_m0_m2 = <TCSR_WIFI_NOC_MEMTYPE_M0_M2>;
+		};
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&tlmm 5 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		led_power: power {
+			label = "blue:power";
+			gpios = <&tlmm 0 GPIO_ACTIVE_HIGH>;
+			default-state = "keep";
+			panic-indicator;
+		};
+
+		sfp {
+			label = "green:sfp";
+			gpios = <&tlmm 1 GPIO_ACTIVE_HIGH>;
+		};
+
+		ethernet {
+			label = "green:ethernet";
+			gpios = <&tlmm 3 GPIO_ACTIVE_HIGH>;
+		};
+
+		wifi1 {
+			label = "green:wifi1";
+			gpios = <&tlmm 4 GPIO_ACTIVE_HIGH>;
+		};
+
+		wifi2 {
+			label = "green:wifi2";
+			gpios = <&tlmm 28 GPIO_ACTIVE_HIGH>;
+		};
+
+		wifi3 {
+			label = "green:wifi3";
+			gpios = <&tlmm 29 GPIO_ACTIVE_HIGH>;
+		};
+
+		wifi4 {
+			label = "green:wifi4";
+			gpios = <&tlmm 30 GPIO_ACTIVE_HIGH>;
+		};
+
+		wifi5 {
+			label = "green:wifi5";
+			gpios = <&tlmm 31 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+	i2c_sfp: i2c-gpio {
+		compatible = "i2c-gpio";
+		sda-gpios = <&tlmm 35 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&tlmm 34 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
+	};
+
+	sfp: sfp {
+		compatible = "sff,sfp";
+		i2c-bus = <&i2c_sfp>;
+		los-gpios = <&tlmm 25 GPIO_ACTIVE_HIGH>;
+		mod-def0-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
+		tx-disable-gpios = <&tlmm 27 GPIO_ACTIVE_LOW>;
+		maximum-power-milliwatt = <1000>;
+	};
+
+	reg_usb: regulator-usb-supply {
+		compatible = "regulator-fixed";
+		regulator-name = "usb-supply";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		regulator-boot-on;
+		gpio = <&tlmm 44 GPIO_ACTIVE_HIGH>;
+	};
+
+	reg_pcie: regulator-pcie-supply {
+		compatible = "regulator-fixed";
+		regulator-name = "pcie-supply";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		enable-active-high;
+		gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+	};
+
+	output-usb-power {
+		compatible = "regulator-output";
+		vout-supply = <&reg_usb>;
+	};
+};
+
+&prng {
+	status = "okay";
+};
+
+&crypto {
+	status = "okay";
+};
+
+&watchdog {
+	status = "okay";
+};
+
+&tlmm {
+	gpio-line-names = "led-power", "", "led-sfp", "led-ethernet", "led-wifi1", "reset", "", "",
+		"", "", "", "", "spi-cs0", "", "", "",
+		"", "", "", "", "", "", "", "",
+		"sfp-present", "sfp-los", "", "sfp-tx-disable", "led-wifi2", "led-wifi3", "led-wifi4", "led-wifi5",
+		"", "", "sfp-i2c-scl", "sfp-i2c-sda", "", "", "", "",
+		"", "", "", "", "switch-usb-power", "spi-cs1-ts", "", "",
+		"", "", "", "switch-pcie-power";
+
+	serial_pins: serial_pinmux {
+		mux {
+			pins = "gpio60", "gpio61";
+			function = "blsp_uart0";
+			bias-disable;
+		};
+	};
+
+	spi_0_pins: spi_0_pinmux {
+		pin {
+			function = "blsp_spi0";
+			pins = "gpio55", "gpio56", "gpio57";
+			drive-strength = <2>;
+			bias-disable;
+		};
+		pin_cs {
+			function = "gpio";
+			pins = "gpio54";
+			drive-strength = <2>;
+			bias-disable;
+			output-high;
+		};
+
+		pin_cs1 {
+			function = "gpio";
+			pins = "gpio45";
+			bias-disable;
+			output-high;
+		};
+	};
+};
+
+&blsp_dma {
+	status = "okay";
+};
+
+&blsp1_spi1 {
+	status = "okay";
+	pinctrl-0 = <&spi_0_pins>;
+	pinctrl-names = "default";
+	cs-gpios = <0>, <&tlmm 45 GPIO_ACTIVE_LOW>;
+
+	zt2046q@1 {
+		reg = <1>;
+		compatible = "zt2046q", "ti,ads7846";
+		spi-max-frequency = <1000000>;
+		// fake gpio for interrupt and pendown-gpio
+		interrupts-extended = <&tlmm 90 IRQ_TYPE_NONE>;
+		pendown-gpio = <&tlmm 91 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&flash0 {
+	// SPI NOR unstable faster
+	spi-max-frequency = <24000000>;
+};
+
+&nor_partitions {
+	partition@100000 {
+		compatible = "mikrotik,minor";
+		label = "firmware";
+		reg = <0x100000 0xf00000>;
+	};
+};
+
+&blsp1_uart1 {
+	status = "okay";
+	pinctrl-0 = <&serial_pins>;
+	pinctrl-names = "default";
+};
+
+&cryptobam {
+	status = "okay";
+};
+
+&mdio {
+	status = "okay";
+};
+
+&ethphy3 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+};
+
+&ethphy4 {
+	qcom,single-led-1000;
+	qcom,single-led-100;
+	qcom,single-led-10;
+	sfp = <&sfp>;
+};
+
+&gmac {
+	status = "okay";
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&switch {
+	status = "okay";
+};
+
+&swport4 {
+	status = "okay";
+	label = "lan";
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
+};
+
+&swport5 {
+	status = "okay";
+	label = "sfp";
+	nvmem-cells = <&macaddr_base 1>;
+	nvmem-cell-names = "mac-address";
+};
+
+&wifi0 {
+	status = "okay";
+	qcom,ath10k-calibration-variant = "MikroTik-d23-dk";
+};
+
+&wifi1 {
+	status = "okay";
+	qcom,ath10k-calibration-variant = "MikroTik-d23-dk";
+};
+
+&pcie0 {
+	status = "okay";
+	persts-gpio = <&tlmm 49 GPIO_ACTIVE_HIGH>;
+	vdppe-3v3-supply = <&reg_pcie>;
+};
+
+&usb2 {
+	status = "okay";
+};
+
+&usb2_hs_phy {
+	status = "okay";
+};
+
+&usb3 {
+	status = "okay";
+};
+
+&usb3_ss_phy {
+	status = "okay";
+};
+
+&usb3_hs_phy {
+	status = "okay";
+};
