@@ -1515,7 +1515,7 @@ TARGET_DEVICES += mikrotik_ltap-2hnd
 define Device/mikrotik_routerboard-750gr3
   $(Device/MikroTik)
   DEVICE_MODEL := RouterBOARD 750Gr3
-  DEVICE_PACKAGES += -wpad-basic-mbedtls
+  DEVICE_PACKAGES += -wpad-basic-mbedtls kmod-sdhci-mt7620
   SUPPORTED_DEVICES += mikrotik,rb750gr3
 endef
 TARGET_DEVICES += mikrotik_routerboard-750gr3
@@ -1523,7 +1523,7 @@ TARGET_DEVICES += mikrotik_routerboard-750gr3
 define Device/mikrotik_routerboard-760igs
   $(Device/MikroTik)
   DEVICE_MODEL := RouterBOARD 760iGS
-  DEVICE_PACKAGES += kmod-sfp -wpad-basic-mbedtls
+  DEVICE_PACKAGES += kmod-sfp -wpad-basic-mbedtls kmod-sdhci-mt7620
 endef
 TARGET_DEVICES += mikrotik_routerboard-760igs
 
