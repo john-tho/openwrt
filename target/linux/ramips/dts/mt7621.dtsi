@@ -1,8 +1,9 @@
 /dts-v1/;
 
 #include <dt-bindings/interrupt-controller/mips-gic.h>
-#include <dt-bindings/clock/mt7621-clk.h>
 #include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/clock/mt7621-clk.h>
+#include <dt-bindings/reset/mt7621-reset.h>
 
 / {
 	#address-cells = <1>;
@@ -60,6 +61,7 @@
 		sysc: syscon@0 {
 			compatible = "mediatek,mt7621-sysc", "syscon";
 			#clock-cells = <1>;
+			#reset-cells = <1>;
 			ralink,memctl = <&memc>;
 			clock-output-names = "xtal", "cpu", "bus",
 					     "50m", "125m", "150m",
@@ -90,7 +92,7 @@
 
 			clocks = <&sysclock>;
 
-			resets = <&rstctrl 16>;
+			resets = <&sysc MT7621_RST_I2C>;
 			reset-names = "i2c";
 
 			#address-cells = <1>;
@@ -108,7 +110,7 @@
 
 			clocks = <&sysclock>;
 
-			resets = <&rstctrl 17>;
+			resets = <&sysc MT7621_RST_I2S>;
 			reset-names = "i2s";
 
 			interrupt-parent = <&gic>;
@@ -128,7 +130,7 @@
 			compatible = "ralink,mt7621-systick", "ralink,cevt-systick";
 			reg = <0x500 0x10>;
 
-			resets = <&rstctrl 28>;
+			resets = <&sysc MT7621_RST_AUX_STCK>;
 			reset-names = "intc";
 
 			interrupt-parent = <&gic>;
@@ -198,7 +200,7 @@
 
 			clocks = <&sysc MT7621_CLK_BUS>;
 
-			resets = <&rstctrl 18>;
+			resets = <&sysc MT7621_RST_SPI>;
 			reset-names = "spi";
 
 			#address-cells = <1>;
@@ -212,7 +214,7 @@
 			compatible = "ralink,rt3883-gdma";
 			reg = <0x2800 0x800>;
 
-			resets = <&rstctrl 14>;
+			resets = <&sysc MT7621_RST_GDMA>;
 			reset-names = "dma";
 
 			interrupt-parent = <&gic>;
@@ -229,7 +231,7 @@
 			compatible = "mediatek,mt7621-hsdma";
 			reg = <0x7000 0x1000>;
 
-			resets = <&rstctrl 5>;
+			resets = <&sysc MT7621_RST_HSDMA>;
 			reset-names = "hsdma";
 
 			interrupt-parent = <&gic>;
@@ -332,11 +334,6 @@
 				function = "sdhci";
 			};
 		};
-	};
-
-	rstctrl: rstctrl {
-		compatible = "ralink,rt2880-reset";
-		#reset-cells = <1>;
 	};
 
 	clkctrl: clkctrl {
@@ -448,7 +445,7 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		resets = <&rstctrl 6>, <&rstctrl 23>;
+		resets = <&sysc MT7621_RST_FE>, <&sysc MT7621_RST_ETH>;
 		reset-names = "fe", "eth";
 
 		interrupt-parent = <&gic>;
@@ -486,7 +483,7 @@
 				compatible = "mediatek,mt7621";
 				reg = <0x1f>;
 				mediatek,mcm;
-				resets = <&rstctrl 2>;
+				resets = <&sysc MT7621_RST_MCM>;
 				reset-names = "mcm";
 				interrupt-controller;
 				#interrupt-cells = <1>;
@@ -578,7 +575,7 @@
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 0>;
 			interrupt-map = <0 0 0 0 &gic GIC_SHARED 4 IRQ_TYPE_LEVEL_HIGH>;
-			resets = <&rstctrl 24>;
+			resets = <&sysc MT7621_RST_PCIE0>;
 			clocks = <&sysc MT7621_CLK_PCIE0>;
 			phys = <&pcie0_phy 1>;
 			phy-names = "pcie-phy0";
@@ -593,7 +590,7 @@
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 0>;
 			interrupt-map = <0 0 0 0 &gic GIC_SHARED 24 IRQ_TYPE_LEVEL_HIGH>;
-			resets = <&rstctrl 25>;
+			resets = <&sysc MT7621_RST_PCIE1>;
 			clocks = <&sysc MT7621_CLK_PCIE1>;
 			phys = <&pcie0_phy 1>;
 			phy-names = "pcie-phy1";
@@ -608,7 +605,7 @@
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 0>;
 			interrupt-map = <0 0 0 0 &gic GIC_SHARED 25 IRQ_TYPE_LEVEL_HIGH>;
-			resets = <&rstctrl 26>;
+			resets = <&sysc MT7621_RST_PCIE2>;
 			clocks = <&sysc MT7621_CLK_PCIE2>;
 			phys = <&pcie2_phy 0>;
 			phy-names = "pcie-phy2";
