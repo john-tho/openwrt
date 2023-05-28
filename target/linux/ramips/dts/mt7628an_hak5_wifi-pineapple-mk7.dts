@@ -56,15 +56,6 @@
 		};
 	};
 
-	sdhci@10130000 {
-		compatible = "ralink,mt7620-sdhci";
-		reg = <0x10130000 4000>;
-
-		interrupt-parent = <&intc>;
-		interrupts = <14>;
-
-		status = "okay";
-	};
 };
 
 &state_default {
@@ -136,4 +127,8 @@
 	macaddr_factory_4: macaddr@4 {
 		reg = <0x4 0x6>;
 	};
+};
+
+&sdhci {
+	status = "okay";
 };
