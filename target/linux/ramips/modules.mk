@@ -23,21 +23,6 @@ endef
 
 $(eval $(call KernelPackage,pwm-mediatek-ramips))
 
-define KernelPackage/sdhci-mt7620-downstream
-  SUBMENU:=Other modules
-  TITLE:=MT7620 SDCI (downstream)
-  DEPENDS:=@(TARGET_ramips_mt7620||TARGET_ramips_mt76x8||TARGET_ramips_mt7621) +kmod-mmc
-  KCONFIG:= \
-	CONFIG_MTK_MMC \
-	CONFIG_MTK_AEE_KDUMP=n \
-	CONFIG_MTK_MMC_CD_POLL=n
-  FILES:= \
-	$(LINUX_DIR)/drivers/mmc/host/mtk-mmc/mtk_sd.ko
-  AUTOLOAD:=$(call AutoProbe,mtk_sd,1)
-endef
-
-$(eval $(call KernelPackage,sdhci-mt7620-downstream))
-
 define KernelPackage/mmc-mtk
   SUBMENU:=Other modules
   TITLE:=MT7620 MMC (upstream)
@@ -59,8 +44,7 @@ define KernelPackage/sdhci-mt7620
   SUBMENU:=Other modules
   TITLE:=MT7620 SDCI/MMC package selector
   DEPENDS:=@(TARGET_ramips_mt7620||TARGET_ramips_mt76x8||TARGET_ramips_mt7621) \
-	   +(TARGET_ramips_mt7620||TARGET_ramips_mt76x8):kmod-sdhci-mt7620-downstream \
-	   +TARGET_ramips_mt7621:kmod-mmc-mtk
+	   +kmod-mmc-mtk
 endef
 
 $(eval $(call KernelPackage,sdhci-mt7620))
