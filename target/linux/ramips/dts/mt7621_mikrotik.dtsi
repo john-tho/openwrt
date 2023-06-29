@@ -7,7 +7,7 @@
 
 / {
 	chosen {
-		bootargs = "console=ttyS0,115200 mtk_soc_eth.dyndbg=\"+p\" sfp.dyndbg=\"+p\" at803x.dyndbg=\"+p\"";
+		bootargs = "console=ttyS0,115200 mtk_soc_eth.dyndbg=\"+p\" sfp.dyndbg=\"+p\" at803x.dyndbg=\"+p\" dyndbg=\"file drivers/platform/mikrotik/* +p\"";
 	};
 
 	keys: keys {
