@@ -51,6 +51,20 @@
 					label = "hard_config";
 					reg = <0xf000 0x1000>;
 					read-only;
+					compatible = "nvmem-cells";
+
+					nvmem-layout {
+						compatible = "fixed-layout";
+						#address-cells = <1>;
+						#size-cells = <1>;
+
+						macaddr_base: mac@10 {
+							compatible = "mac-base";
+							reg = <0x10 0x6>;
+							#nvmem-cell-cells = <1>;
+						};
+
+					};
 				};
 
 				partition@10000 {

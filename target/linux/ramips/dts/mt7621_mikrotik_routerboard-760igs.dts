@@ -47,6 +47,8 @@
 
 &gmac1 {
 	status = "okay";
+	nvmem-cells = <&macaddr_base 5>;
+	nvmem-cell-names = "mac-address";
 
 	label = "sfp";
 	phy-mode = "rgmii-rxid";

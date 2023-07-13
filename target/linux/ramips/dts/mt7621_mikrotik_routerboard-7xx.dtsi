@@ -46,26 +46,36 @@
 		port@0 {
 			status = "okay";
 			label = "wan";
+			nvmem-cells = <&macaddr_base 0>;
+			nvmem-cell-names = "mac-address";
 		};
 
 		port@1 {
 			status = "okay";
 			label = "lan2";
+			nvmem-cells = <&macaddr_base 1>;
+			nvmem-cell-names = "mac-address";
 		};
 
 		port@2 {
 			status = "okay";
 			label = "lan3";
+			nvmem-cells = <&macaddr_base 2>;
+			nvmem-cell-names = "mac-address";
 		};
 
 		port@3 {
 			status = "okay";
 			label = "lan4";
+			nvmem-cells = <&macaddr_base 3>;
+			nvmem-cell-names = "mac-address";
 		};
 
 		port@4 {
 			status = "okay";
 			label = "lan5";
+			nvmem-cells = <&macaddr_base 4>;
+			nvmem-cell-names = "mac-address";
 		};
 	};
 };
@@ -76,4 +86,9 @@
 
 &xhci {
 	vbus-supply = <&reg_usb_vbus>;
+};
+
+&gmac0 {
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
 };
