@@ -1,0 +1,64 @@
+From a91845b9a872039618d74104c0721376ce092638 Mon Sep 17 00:00:00 2001
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+Date: Wed, 14 Jun 2023 08:30:16 +0200
+Subject: [PATCH 2/2] sysfs: Skip empty folders creation
+
+Most sysfs attributes are statically defined, the goal with this design
+being to be able to move all the filesystem description into read-only
+memory. Anyway, it may be relevant in some cases to populate attributes
+at run time. This leads to situation where an attribute may or may not be
+present depending on conditions which are not known at compile
+time, up to the point where no attribute at all gets added in a folder
+which then becomes "sometimes" empty. Problem is, providing an attribute
+group with a name and without .[bin_]attrs members will be loudly
+refused by the core, leading in most cases to a device registration
+failure.
+
+The simple way to support such situation right now is to dynamically
+allocate an empty attribute array, which is:
+* a (small) waste of space
+* a waste of time
+* disturbing, to say the least, as an empty sysfs folder will be created
+  anyway.
+
+Another (even worse) possibility would be to dynamically overwrite a
+member of the attribute_group list, hopefully the last, which is also
+supposed to remain in the read-only section.
+
+In order to avoid these hackish situations, while still giving a little
+bit of flexibility, we might just check the validity of the .[bin_]attrs
+list and, if empty, just skip the attribute group creation instead of
+failing. This way, developers will not be tempted to workaround the
+core with useless allocations or strange writes on supposedly read-only
+structures.
+
+The content of the WARN() message is kept but turned into a debug
+message in order to help developers understanding why their sysfs
+folders might now silently fail to be created.
+
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Message-ID: <20230614063018.2419043-3-miquel.raynal@bootlin.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/sysfs/group.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+--- a/fs/sysfs/group.c
++++ b/fs/sysfs/group.c
+@@ -119,11 +119,13 @@ static int internal_create_group(struct
+ 	/* Updates may happen before the object has been instantiated */
+ 	if (unlikely(update && !kobj->sd))
+ 		return -EINVAL;
++
+ 	if (!grp->attrs && !grp->bin_attrs) {
+-		WARN(1, "sysfs: (bin_)attrs not set by subsystem for group: %s/%s\n",
+-			kobj->name, grp->name ?: "");
+-		return -EINVAL;
++		pr_debug("sysfs: (bin_)attrs not set by subsystem for group: %s/%s, skipping\n",
++			 kobj->name, grp->name ?: "");
++		return 0;
+ 	}
++
+ 	kobject_get_ownership(kobj, &uid, &gid);
+ 	if (grp->name) {
+ 		if (update) {

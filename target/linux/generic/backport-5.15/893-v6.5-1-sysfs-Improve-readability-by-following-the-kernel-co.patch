@@ -1,0 +1,36 @@
+From 4981e0139feeadb1cdffd43a203543afe20769fa Mon Sep 17 00:00:00 2001
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+Date: Wed, 14 Jun 2023 08:30:15 +0200
+Subject: [PATCH 1/2] sysfs: Improve readability by following the kernel coding
+ style
+
+The purpose of the if/else block is to select the right sysfs directory
+entry to be used for the files creation. At a first look when you have
+the file in front of you, it really seems like the "create_files()"
+lines right after the block are badly indented and the "else" does not
+guard. In practice the code is correct but lacks curly brackets to show
+where the big if/else block actually ends. Add these brackets to comply
+with the current kernel coding style and to ease the understanding of
+the whole logic.
+
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Message-ID: <20230614063018.2419043-2-miquel.raynal@bootlin.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/sysfs/group.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/fs/sysfs/group.c
++++ b/fs/sysfs/group.c
+@@ -143,8 +143,10 @@ static int internal_create_group(struct
+ 				return PTR_ERR(kn);
+ 			}
+ 		}
+-	} else
++	} else {
+ 		kn = kobj->sd;
++	}
++
+ 	kernfs_get(kn);
+ 	error = create_files(kn, kobj, uid, gid, grp, update);
+ 	if (error) {

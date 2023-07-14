@@ -1,0 +1,51 @@
+From fbe37a7afce21f33283869f5d79901b25537c385 Mon Sep 17 00:00:00 2001
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+Date: Thu, 13 Jul 2023 09:55:05 +0200
+Subject: [PATCH 1/3] ABI: sysfs-nvmem-cells: Expose cells through sysfs
+
+The binary content of nvmem devices is available to the user so in the
+easiest cases, finding the content of a cell is rather easy as it is
+just a matter of looking at a known and fixed offset. However, nvmem
+layouts have been recently introduced to cope with more advanced
+situations, where the offset and size of the cells is not known in
+advance or is dynamic. When using layouts, more advanced parsers are
+used by the kernel in order to give direct access to the content of each
+cell regardless of their position/size in the underlying device, but
+these information were not accessible to the user.
+
+By exposing the nvmem cells to the user through a dedicated cell/ folder
+containing one file per cell, we provide a straightforward access to
+useful user information without the need for re-writing a userland
+parser. Content of nvmem cells is usually: product names, manufacturing
+date, MAC addresses, etc,
+
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+---
+ Documentation/ABI/testing/sysfs-nvmem-cells | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-nvmem-cells
+
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-nvmem-cells
+@@ -0,0 +1,19 @@
++What:		/sys/bus/nvmem/devices/.../cells/<cell-name>
++Date:		May 2023
++KernelVersion:	6.5
++Contact:	Miquel Raynal <miquel.raynal@bootlin.com>
++Description:
++		The cells/ folder contains one file per cell exposed by
++		the nvmem device. The name of the file is the cell name.
++		The length of the file is the size of the cell (when
++		known). The content of the file is the binary content of
++		the cell (may sometimes be ASCII, likely without
++		trailing character).
++		Note: This file is only present if CONFIG_NVMEM_SYSFS
++		is enabled
++
++		ex::
++
++		  hexdump -C /sys/bus/nvmem/devices/1-00563/cells/product-name
++		  00000000  54 4e 34 38 4d 2d 50 2d  44 4e         |TN48M-P-DN|
++		  0000000a

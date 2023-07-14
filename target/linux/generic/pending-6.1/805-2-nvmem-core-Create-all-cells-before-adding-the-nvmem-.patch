@@ -1,0 +1,45 @@
+From 681e18c0a0f200c27ee72e274e572d370e957a70 Mon Sep 17 00:00:00 2001
+From: Miquel Raynal <miquel.raynal@bootlin.com>
+Date: Thu, 13 Jul 2023 09:55:06 +0200
+Subject: [PATCH 2/3] nvmem: core: Create all cells before adding the nvmem
+ device
+
+Let's pack all the cells creation in one place, so they are all created
+before we add the nvmem device.
+
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+---
+ drivers/nvmem/core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+index 3f8c7718412b..48659106a1e2 100644
+--- a/drivers/nvmem/core.c
++++ b/drivers/nvmem/core.c
+@@ -998,17 +998,17 @@ struct nvmem_device *nvmem_register(const struct nvmem_config *config)
+ 	if (rval)
+ 		goto err_remove_cells;
+ 
+-	dev_dbg(&nvmem->dev, "Registering nvmem device %s\n", config->name);
+-
+-	rval = device_add(&nvmem->dev);
++	rval = nvmem_add_cells_from_fixed_layout(nvmem);
+ 	if (rval)
+ 		goto err_remove_cells;
+ 
+-	rval = nvmem_add_cells_from_fixed_layout(nvmem);
++	rval = nvmem_add_cells_from_layout(nvmem);
+ 	if (rval)
+ 		goto err_remove_cells;
+ 
+-	rval = nvmem_add_cells_from_layout(nvmem);
++	dev_dbg(&nvmem->dev, "Registering nvmem device %s\n", config->name);
++
++	rval = device_add(&nvmem->dev);
+ 	if (rval)
+ 		goto err_remove_cells;
+ 
+-- 
+2.41.0
+
