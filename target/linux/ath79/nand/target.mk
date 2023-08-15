@@ -2,7 +2,7 @@ BOARDNAME := Generic devices with NAND flash
 
 FEATURES += nand
 
-DEFAULT_PACKAGES += wpad-basic-mbedtls
+DEFAULT_PACKAGES += wpad-basic-mbedtls uboot-envtools
 
 define Target/Description
 	Firmware for boards using Qualcomm Atheros, MIPS-based SoCs
