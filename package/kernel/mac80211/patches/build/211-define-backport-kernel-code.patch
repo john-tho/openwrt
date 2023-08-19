@@ -1,0 +1,71 @@
+--- /dev/null
++++ b/scripts/backport-version-code.pl
+@@ -0,0 +1,19 @@
++#!/usr/bin/env perl
++# SPDX-License-Identifier: GPL-2.0
++
++use strict;
++
++while (<>) {
++  my $line = $_;
++  $line =~ /.*([[:digit:]])+\.([[:digit:]]+)\.([[:digit:]]+).*/;
++  if ($1 and $2 >= 0 and $3 >= 0) {
++    my $version = $1;
++    my $patchlevel = $2;
++    my $sublevel = $3;
++    if($sublevel > 255) {
++      $sublevel = 255;
++    }
++    my $versioncode = ($version << 16) + ($patchlevel << 8) + ($sublevel);
++    print "$versioncode";
++  }
++}
+--- a/Makefile
++++ b/Makefile
+@@ -36,6 +36,7 @@ mrproper:
+ 	@rm -f .config
+ 	@rm -f .kernel_config_md5 Kconfig.versions Kconfig.kernel
+ 	@rm -f backport-include/backport/autoconf.h
++	@rm -f backport-include/generated/backport_version.h
+ 
+ .SILENT: $(STAMP_KERNEL_CONFIG)
+ $(STAMP_KERNEL_CONFIG):
+--- a/Makefile.real
++++ b/Makefile.real
+@@ -6,6 +6,10 @@ else
+ export BACKPORTS_GIT_TRACKER_DEF=
+ endif
+ 
++backport_version_h := backport-include/generated/backport_version.h
++BACKPORTED_KERNEL_VERSION_CODE := $(shell echo $(BACKPORTED_KERNEL_VERSION) | \
++                       perl scripts/backport-version-code.pl)
++
+ # disable built-in rules for this file
+ .SUFFIXES:
+ 
+@@ -88,8 +93,13 @@ backport-include/backport/autoconf.h: .c
+ 	fi
+ 	@echo " done."
+ 
++$(backport_version_h):
++	@printf "Building $(backport_version_h) ..."
++	@echo "#define BACKPORTED_LINUX_VERSION_CODE $(BACKPORTED_KERNEL_VERSION_CODE)" > $(backport_version_h)
++	@echo " done."
++
+ .PHONY: modules
+-modules: backport-include/backport/autoconf.h
++modules: backport-include/backport/autoconf.h $(backport_version_h)
+ 	@$(MAKE) -f Makefile.build modules
+ 
+ .PHONY: install
+--- a/backport-include/linux/version.h
++++ b/backport-include/linux/version.h
+@@ -2,6 +2,8 @@
+ #define _BP_LINUX_VERSION_H
+ #include_next <linux/version.h>
+ 
++#include <generated/backport_version.h>
++
+ #ifndef RHEL_RELEASE_VERSION
+ #define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))
+ #endif
