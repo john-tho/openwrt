@@ -23,6 +23,7 @@
 		led-failsafe = &led_user;
 		led-running = &led_user;
 		led-upgrade = &led_user;
+		label-mac-device = &gmac;
 	};
 
 	soc {
@@ -153,6 +154,8 @@
 
 &gmac {
 	status = "okay";
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
 };
 
 &switch {
@@ -162,11 +165,15 @@
 &swport4 {
 	status = "okay";
 	label = "sw-eth2";
+	nvmem-cells = <&macaddr_base 1>;
+	nvmem-cell-names = "mac-address";
 };
 
 &swport5 {
 	status = "okay";
 	label = "sw-eth1";
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
 };
 
 &wifi0 {

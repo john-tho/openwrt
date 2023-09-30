@@ -40,6 +40,7 @@
 		led-failsafe = &user;
 		led-running = &user;
 		led-upgrade = &user;
+		label-gmac-device = &gmac;
 	};
 
 	soc {
@@ -248,6 +249,8 @@
 
 &gmac {
 	status = "okay";
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
 };
 
 &switch {
@@ -262,4 +265,6 @@
 	label = "lan";
 	phy-handle = <&ar8035>;
 	phy-mode = "rgmii-id";
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
 };
