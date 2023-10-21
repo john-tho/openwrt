@@ -1,0 +1,35 @@
+From 211483a3fbbc4a70d9af16c7feda5a361a98de49 Mon Sep 17 00:00:00 2001
+From: John Thomson <git@johnthomson.fastmail.com.au>
+Date: Sun, 22 Oct 2023 04:56:26 +1000
+Subject: [PATCH] ARM: decompressor: fix invalid constant adr instruction
+
+With a zImage built without multiplatform and with uncompress debug,
+the assembler will fail to build the self extractor head. This was not
+the case before the multiplatform changes.
+
+	# CONFIG_ARCH_MULTIPLATFORM is not set
+	CONFIG_DEBUG_LL=y
+	CONFIG_DEBUG_UNCOMPRESS=y
+
+arch/arm/boot/compressed/head.S: Assembler messages:
+arch/arm/boot/compressed/head.S:282: Error: invalid constant (418) after fixup
+
+Based on: https://lore.kernel.org/lkml/20230202102538.999026-1-arnd@kernel.org/
+
+Possibly (unconfirmed) Fixes: 84fc86360623 ("ARM: make ARCH_MULTIPLATFORM user-visible")
+Signed-off-by: John Thomson <git@johnthomson.fastmail.com.au>
+---
+ arch/arm/boot/compressed/head.S | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/arm/boot/compressed/head.S
++++ b/arch/arm/boot/compressed/head.S
+@@ -279,7 +279,7 @@ not_angel:
+ 		mov	r0, pc
+ 		and	r0, r0, #0xf8000000
+ #ifdef CONFIG_USE_OF
+-		adr	r1, LC1
++		adr_l	r1, LC1
+ #ifdef CONFIG_ARM_APPENDED_DTB
+ 		/*
+ 		 * Look for an appended DTB.  If found, we cannot use it to
