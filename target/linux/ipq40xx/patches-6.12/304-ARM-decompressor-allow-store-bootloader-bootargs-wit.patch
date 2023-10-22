@@ -1,0 +1,275 @@
+From 86727e339064ac4a282c9efb16918290fd4248f6 Mon Sep 17 00:00:00 2001
+From: John Thomson <git@johnthomson.fastmail.com.au>
+Date: Sun, 22 Oct 2023 13:51:45 +1000
+Subject: [PATCH] ARM: decompressor: allow store bootloader bootargs with
+ APPENDED_DTB
+
+Using ARM_APPENDED_DTB ignores the DTB passed by a DTB capable bootloader
+Allow creating the appended DTB property /chosen/bootargs-bootloader
+with the bootargs from this bootloader passed DTB so that the original
+cmdline options can be used later.
+Split the FDT processing functions used by both ATAG parsing, and this
+bootargs saving into a header.
+
+Signed-off-by: John Thomson <git@johnthomson.fastmail.com.au>
+---
+ arch/arm/Kconfig                              |  8 ++++
+ arch/arm/boot/compressed/Makefile             |  5 ++-
+ arch/arm/boot/compressed/atags_to_fdt.c       | 40 +++++--------------
+ .../boot/compressed/fdt_bootloader_store.c    | 27 +++++++++++++
+ arch/arm/boot/compressed/fdt_misc.c           | 34 ++++++++++++++++
+ arch/arm/boot/compressed/fdt_misc.h           | 14 +++++++
+ arch/arm/boot/compressed/head.S               | 18 ++++++++-
+ arch/arm/boot/compressed/misc.h               |  1 +
+ 8 files changed, 115 insertions(+), 32 deletions(-)
+ create mode 100644 arch/arm/boot/compressed/fdt_bootloader_store.c
+ create mode 100644 arch/arm/boot/compressed/fdt_bootloader_store.h
+ create mode 100644 arch/arm/boot/compressed/fdt_misc.c
+ create mode 100644 arch/arm/boot/compressed/fdt_misc.h
+
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -1568,6 +1568,14 @@ config ARM_ATAG_DTB_COMPAT_CMDLINE_EXTEN
+ 
+ endchoice
+ 
++config ARM_APPENDED_DTB_STORE_BOOTLOADER_FDT_BOOTARGS
++	bool "Store bootloader cmdline from FDT"
++	depends on ARM_APPENDED_DTB
++	help
++	  Store the original bootargs property in /chosen/bootargs-bootloader
++	  where a (DTB capable) device bootloader and DTB are ignored for an
++	  ARM_APPENDED_DTB
++
+ config CMDLINE
+ 	string "Default kernel command string"
+ 	default ""
+--- a/arch/arm/boot/compressed/Makefile
++++ b/arch/arm/boot/compressed/Makefile
+@@ -87,7 +87,10 @@ libfdt_objs := fdt_rw.o fdt_ro.o fdt_wip
+ ifeq ($(CONFIG_ARM_ATAG_DTB_COMPAT),y)
+ CFLAGS_REMOVE_atags_to_fdt.o += -Wframe-larger-than=${CONFIG_FRAME_WARN}
+ CFLAGS_atags_to_fdt.o += -Wframe-larger-than=1280
+-OBJS	+= $(libfdt_objs) atags_to_fdt.o
++OBJS	+= $(libfdt_objs) fdt_misc.o atags_to_fdt.o
++endif
++ifeq ($(CONFIG_ARM_APPENDED_DTB_STORE_BOOTLOADER_FDT_BOOTARGS),y)
++OBJS	+= $(libfdt_objs) fdt_misc.o fdt_bootloader_store.o
+ endif
+ ifeq ($(CONFIG_USE_OF),y)
+ OBJS	+= $(libfdt_objs) fdt_check_mem_start.o
+--- a/arch/arm/boot/compressed/atags_to_fdt.c
++++ b/arch/arm/boot/compressed/atags_to_fdt.c
+@@ -3,6 +3,7 @@
+ #include <asm/setup.h>
+ #include <libfdt.h>
+ #include "misc.h"
++#include "fdt_misc.h"
+ 
+ #if defined(CONFIG_ARM_ATAG_DTB_COMPAT_CMDLINE_EXTEND)
+ #define do_extend_cmdline 1
+@@ -10,16 +11,15 @@
+ #define do_extend_cmdline 0
+ #endif
+ 
+-#define NR_BANKS 16
++#if defined(CONFIG_ARM_ATAG_DTB_COMPAT_STORE_BOOTLOADER_FDT_CMDLINE)
++#define do_store_cmdline 1
++#else
++#define do_store_cmdline 0
++#endif
+ 
+-static int node_offset(void *fdt, const char *node_path)
+-{
+-	int offset = fdt_path_offset(fdt, node_path);
+-	if (offset == -FDT_ERR_NOTFOUND)
+-		/* Add the node to root if not found, dropping the leading '/' */
+-		offset = fdt_add_subnode(fdt, 0, node_path + 1);
+-	return offset;
+-}
++
++
++#define NR_BANKS 16
+ 
+ static int setprop(void *fdt, const char *node_path, const char *property,
+ 		   void *val_array, int size)
+@@ -30,15 +30,6 @@ static int setprop(void *fdt, const char
+ 	return fdt_setprop(fdt, offset, property, val_array, size);
+ }
+ 
+-static int setprop_string(void *fdt, const char *node_path,
+-			  const char *property, const char *string)
+-{
+-	int offset = node_offset(fdt, node_path);
+-	if (offset < 0)
+-		return offset;
+-	return fdt_setprop_string(fdt, offset, property, string);
+-}
+-
+ static int setprop_cell(void *fdt, const char *node_path,
+ 			const char *property, uint32_t val)
+ {
+@@ -48,17 +39,6 @@ static int setprop_cell(void *fdt, const
+ 	return fdt_setprop_cell(fdt, offset, property, val);
+ }
+ 
+-static const void *getprop(const void *fdt, const char *node_path,
+-			   const char *property, int *len)
+-{
+-	int offset = fdt_path_offset(fdt, node_path);
+-
+-	if (offset == -FDT_ERR_NOTFOUND)
+-		return NULL;
+-
+-	return fdt_getprop(fdt, offset, property, len);
+-}
+-
+ static uint32_t get_cell_size(const void *fdt)
+ {
+ 	int len;
+@@ -142,7 +122,7 @@ int atags_to_fdt(void *atag_list, void *
+ 
+ 	/* if we get a DTB here we're done already */
+ 	if (*(__be32 *)atag_list == cpu_to_fdt32(FDT_MAGIC))
+-	       return 0;
++		return 0;
+ 
+ 	/* validate the ATAG */
+ 	if (atag->hdr.tag != ATAG_CORE ||
+--- /dev/null
++++ b/arch/arm/boot/compressed/fdt_bootloader_store.c
+@@ -0,0 +1,27 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/libfdt_env.h>
++#include <libfdt.h>
++#include "misc.h"
++#include "fdt_misc.h"
++#include "fdt_bootloader_store.h"
++
++int fdt_store_bootloader_bootargs(void *bootloader_fdt, void *fdt, int total_space)
++{
++	const char *bootloader_fdt_bootargs;
++	int ret;
++	int len = 0;
++
++	if (fdt_check_header(bootloader_fdt) < 0)
++		return 1;
++
++	bootloader_fdt_bootargs = getprop(bootloader_fdt, "/chosen", "bootargs", &len);
++	if (len > 0 && !getprop(fdt, "/chosen", "bootargs-bootloader", &len)) {
++		ret = fdt_open_into(fdt, fdt, total_space);
++		if (ret < 0)
++			return ret;
++		setprop_string(fdt, "/chosen", "bootargs-bootloader",
++				bootloader_fdt_bootargs);
++		return fdt_pack(fdt);
++	}
++	return 2;
++}
+--- /dev/null
++++ b/arch/arm/boot/compressed/fdt_bootloader_store.h
+@@ -0,0 +1,6 @@
++#ifndef FDT_BOOTLOADER_STORE_H
++#define FDT_BOOTLOADER_STORE_H
++
++int fdt_store_bootloader_bootargs(void *bootloader_fdt, void *fdt, int total_space);
++
++#endif
+--- /dev/null
++++ b/arch/arm/boot/compressed/fdt_misc.c
+@@ -0,0 +1,34 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/libfdt_env.h>
++#include <libfdt.h>
++
++#include <fdt_misc.h>
++
++int node_offset(void *fdt, const char *node_path)
++{
++	int offset = fdt_path_offset(fdt, node_path);
++	if (offset == -FDT_ERR_NOTFOUND)
++		/* Add the node to root if not found, dropping the leading '/' */
++		offset = fdt_add_subnode(fdt, 0, node_path + 1);
++	return offset;
++}
++
++int setprop_string(void *fdt, const char *node_path,
++		   const char *property, const char *string)
++{
++	int offset = node_offset(fdt, node_path);
++	if (offset < 0)
++		return offset;
++	return fdt_setprop_string(fdt, offset, property, string);
++}
++
++const void *getprop(const void *fdt, const char *node_path,
++		    const char *property, int *len)
++{
++	int offset = fdt_path_offset(fdt, node_path);
++
++	if (offset == -FDT_ERR_NOTFOUND)
++		return NULL;
++
++	return fdt_getprop(fdt, offset, property, len);
++}
+--- /dev/null
++++ b/arch/arm/boot/compressed/fdt_misc.h
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: GPL-2.0
++#ifndef FDT_MISC_H
++#define FDT_MISC_H
++
++#include <linux/libfdt_env.h>
++#include <libfdt.h>
++
++int node_offset(void *fdt, const char *node_path);
++int setprop_string(void *fdt, const char *node_path,
++		   const char *property, const char *string);
++const void *getprop(const void *fdt, const char *node_path,
++		    const char *property, int *len);
++
++#endif
+--- a/arch/arm/boot/compressed/head.S
++++ b/arch/arm/boot/compressed/head.S
+@@ -369,7 +369,8 @@ restart:	adr	r0, LC1
+ 		cmp	lr, r1
+ 		bne	dtb_check_done		@ not found
+ 
+-#ifdef CONFIG_ARM_ATAG_DTB_COMPAT
++
++#if defined(CONFIG_ARM_ATAG_DTB_COMPAT) || defined(CONFIG_ARM_APPENDED_DTB_STORE_BOOTLOADER_FDT_BOOTARGS)
+ 		/*
+ 		 * OK... Let's do some funky business here.
+ 		 * If we do have a DTB appended to zImage, and we do have
+@@ -396,9 +397,22 @@ restart:	adr	r0, LC1
+ 		/* temporarily relocate the stack past the DTB work space */
+ 		add	sp, sp, r5
+ 
++/*
++ * if a device tree ptr was passed at r2 by the bootloader, skip the ATAG processing
++ */
++		ldr	r0, [r8, #0]
++		ldr	r1, =OF_DT_MAGIC
++		cmp	r0, r1
+ 		mov	r0, r8
+ 		mov	r1, r6
+ 		mov	r2, r5
++		bne	atags_continue
++#ifdef CONFIG_ARM_APPENDED_DTB_STORE_BOOTLOADER_FDT_BOOTARGS
++		bl	fdt_store_bootloader_bootargs
++#endif
++		b	atags_skip		@ skip ATAG processing as DTB was passed by bootloader
++atags_continue:
++#ifdef CONFIG_ARM_ATAG_DTB_COMPAT
+ 		bl	atags_to_fdt
+ 
+ 		/*
+@@ -414,6 +428,8 @@ restart:	adr	r0, LC1
+ 		mov	r2, r5
+ 		bleq	atags_to_fdt
+ 
++#endif
++atags_skip:
+ 		sub	sp, sp, r5
+ #endif
+ 
