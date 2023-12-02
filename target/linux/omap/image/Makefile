@@ -33,9 +33,11 @@ define Device/Default
   PROFILES := Default
   KERNEL_NAME := zImage
   KERNEL := kernel-bin
+  KERNEL_INITRAMFS = kernel-bin | fit none $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd
   DEVICE_DTS = $(lastword $(subst _, ,$(1)))
   IMAGES := sdcard.img.gz
   IMAGE/sdcard.img.gz := omap-sdcard | append-metadata | gzip
+  KERNEL_LOADADDR := 0x80008000
 endef
 
 #uboot-omap-am335x_evm uboot-omap-omap3_beagle uboot-omap-omap4_panda
