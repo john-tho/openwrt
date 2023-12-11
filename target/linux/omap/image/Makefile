@@ -53,6 +53,7 @@ define Device/ti_am335x-bone-black
   DEVICE_VENDOR := Texas Instruments
   DEVICE_MODEL := AM335x BeagleBone Black
   DEVICE_DTS := am335x-boneblack
+  DEVICE_DTS_OVERLAY := am335x-boneblack-uart1 am335x-boneblack-uart4
 endef
 
 TARGET_DEVICES += ti_am335x-bone-black
