@@ -11,6 +11,7 @@
 		led-failsafe = &led_usr;
 		led-running = &led_usr;
 		led-upgrade = &led_usr;
+		label-mac-device = &gmac0;
 	};
 
 	ath9k-leds {
@@ -135,8 +136,15 @@
 		port@0 {
 			status = "okay";
 			label = "lan";
+			nvmem-cells = <&macaddr_base 0>;
+			nvmem-cell-names = "mac-address";
 		};
 	};
+};
+
+&gmac0 {
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
 };
 
 &pcie0 {

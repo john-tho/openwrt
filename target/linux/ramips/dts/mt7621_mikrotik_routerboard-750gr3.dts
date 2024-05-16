@@ -11,6 +11,7 @@
 		led-failsafe = &led_usr;
 		led-running = &led_usr;
 		led-upgrade = &led_usr;
+		label-mac-device = &gmac1;
 	};
 
 	leds {
@@ -36,10 +37,17 @@
 	};
 };
 
+&gmac0 {
+	nvmem-cells = <&macaddr_base 1>;
+	nvmem-cell-names = "mac-address";
+};
+
 &gmac1 {
 	status = "okay";
 	label = "wan";
 	phy-handle = <&ethphy0>;
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
 };
 
 &ethphy0 {

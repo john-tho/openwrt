@@ -288,10 +288,6 @@ ramips_setup_macs()
 		wan_mac=$(mtd_get_mac_ascii Config wan_hwaddr)
 		label_mac=$lan_mac
 		;;
-	mikrotik,ltap-2hnd)
-		label_mac=$(cat "/sys/firmware/mikrotik/hard_config/mac_base")
-		lan_mac=$label_mac
-		;;
 	tplink,er605-v2)
 		CI_UBIPART="firmware"
 		label_mac=$(mtd_get_mac_uci_config_ubi "tddp")
@@ -302,14 +298,6 @@ ramips_setup_macs()
 		label_mac=$(cat "/sys/class/net/eth0/address")
 		wwan_mac=$(macaddr_add $label_mac 1)
 		ucidef_set_interface "wwan0" device "/dev/cdc-wdm0" protocol "qmi" macaddr "$wwan_mac"
-		;;
-	mikrotik,routerboard-750gr3|\
-	mikrotik,routerboard-760igs|\
-	mikrotik,routerboard-m11g|\
-	mikrotik,routerboard-m33g)
-		label_mac=$(cat "/sys/firmware/mikrotik/hard_config/mac_base")
-		wan_mac=$label_mac
-		lan_mac=$(macaddr_add $label_mac 1)
 		;;
 	mts,wg430223)
 		wan_mac=$(mtd_get_mac_encrypted_arcadyan "board_data")

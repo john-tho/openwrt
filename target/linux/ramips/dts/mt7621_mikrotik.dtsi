@@ -49,6 +49,15 @@
 
 				hard_config {
 					read-only;
+					compatible = "nvmem-cells";
+
+					nvmem-layout {
+						compatible = "mikrotik,routerboot-nvmem";
+						macaddr_base: base-mac-address {
+							#nvmem-cell-cells = <1>;
+						};
+
+					};
 				};
 
 				partition@10000 {
