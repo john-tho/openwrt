@@ -34,8 +34,7 @@
 #define YAFFS_OBJECT_TYPE_FILE	0x1
 #define YAFFS_OBJECTID_ROOT	0x1
 #define YAFFS_SUM_UNUSED	0xFFFF
-#define YAFFS_NAME		"kernel"
-#define YAFFS_NAME_BOOTIMAGE	"bootimage"
+#define YAFFS_MAX_NAME_LENGTH	127 /* 127 YAFFS unicode, 255 otherwise */
 
 #define MINOR_NR_PARTS		2
 
@@ -47,8 +46,29 @@ struct minor_header {
 	int yaffs_type;
 	int yaffs_obj_id;
 	u16 yaffs_sum_unused;
-	char yaffs_name[sizeof(YAFFS_NAME)];
+	char yaffs_name[YAFFS_MAX_NAME_LENGTH + 1];
 };
+
+static int mtdsplit_minor_test_object_header(struct minor_header *hdr)
+{
+	int ret = 0;
+
+	/* match header */
+	if ((ret = (hdr->yaffs_type != YAFFS_OBJECT_TYPE_FILE)))
+		pr_alert("MiNOR type mismatch\n");
+
+	if (!ret && (ret |= (hdr->yaffs_obj_id != YAFFS_OBJECTID_ROOT)))
+		pr_alert("MiNOR rootid mismatch\n");
+
+	if (!ret && (ret |= (hdr->yaffs_sum_unused != YAFFS_SUM_UNUSED)))
+		pr_alert("MiNOR sum_unused mismatch\n");
+
+	if (!ret && (ret |= ((strncmp("kernel", hdr->yaffs_name, YAFFS_MAX_NAME_LENGTH + 1) != 0) &&
+			(strncmp("bootimage", hdr->yaffs_name, YAFFS_MAX_NAME_LENGTH + 1) != 0))))
+		pr_alert("MiNOR filename mismatch\n");
+
+	return ret;
+}
 
 static int mtdsplit_parse_minor(struct mtd_info *master,
 				const struct mtd_partition **pparts,
@@ -68,24 +88,18 @@ static int mtdsplit_parse_minor(struct mtd_info *master,
 	if (retlen != hdr_len)
 		return -EIO;
 
-	/* match header */
-	if (hdr.yaffs_type != YAFFS_OBJECT_TYPE_FILE)
-		return -EINVAL;
-
-	if (hdr.yaffs_obj_id != YAFFS_OBJECTID_ROOT)
-		return -EINVAL;
-
-	if (hdr.yaffs_sum_unused != YAFFS_SUM_UNUSED)
-		return -EINVAL;
-
-	if ((memcmp(hdr.yaffs_name, YAFFS_NAME, sizeof(YAFFS_NAME)) != 0) &&
-			(memcmp(hdr.yaffs_name, YAFFS_NAME_BOOTIMAGE, sizeof(YAFFS_NAME)) != 0))
-		return -EINVAL;
+	err = mtdsplit_minor_test_object_header(&hdr);
+	if (err) {
+		pr_warn("MiNOR YAFFS first object header mismatch, not partitioning %s\n", master->name);
+		return 0;
+	}
 
 	err = mtd_find_rootfs_from(master, master->erasesize, master->size,
 				   &rootfs_offset, NULL);
-	if (err)
-		return err;
+	if (err) {
+		pr_warn("Failed to detect rootfs header: %d, not partitioning %s\n", err, master->name);
+		return 0;
+	}
 
 	parts = kzalloc(MINOR_NR_PARTS * sizeof(*parts), GFP_KERNEL);
 	if (!parts)
