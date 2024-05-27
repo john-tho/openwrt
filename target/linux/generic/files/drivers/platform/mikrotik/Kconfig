@@ -10,7 +10,6 @@ if MIKROTIK
 config MIKROTIK_RB_SYSFS
 	tristate "RouterBoot sysfs support"
 	depends on MTD
-	select LZO_DECOMPRESS
 	select CRC32
 	help
 	  This driver exposes RouterBoot configuration in sysfs.
@@ -20,5 +19,12 @@ config NVMEM_LAYOUT_MIKROTIK
 	depends on NVMEM_LAYOUTS
 	help
 	  This driver exposes MikroTik hard_config via NVMEM layout.
+
+config MIKROTIK_WLAN_DECOMPRESS
+	tristate "Mikrotik factory Wi-Fi caldata decompression support"
+	select LZO_DECOMPRESS
+	help
+	  Allow Mikrotik factory flashed Wi-Fi claibration data to
+	  be decompressed from Mikrotik specific formats
 
 endif # MIKROTIK

@@ -23,7 +23,6 @@
 #define RB_MTD_SOFT_CONFIG	"soft_config"
 
 int routerboot_tag_find(const u8 *bufhead, const size_t buflen, const u16 tag_id, u16 *pld_ofs, u16 *pld_len);
-int routerboot_rle_decode(const u8 *in, size_t inlen, u8 *out, size_t *outlen);
 
 int rb_hardconfig_init(struct kobject *rb_kobj, struct mtd_info *mtd);
 void rb_hardconfig_exit(void);
