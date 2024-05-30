@@ -27,4 +27,11 @@ config MIKROTIK_WLAN_DECOMPRESS
 	  Allow Mikrotik factory flashed Wi-Fi claibration data to
 	  be decompressed from Mikrotik specific formats
 
+config MIKROTIK_WLAN_DECOMPRESS_LZ77
+	tristate "Mikrotik factory Wi-Fi caldata LZ77 decompression support"
+	depends on MIKROTIK_WLAN_DECOMPRESS
+	help
+	  Allow Mikrotik LZ77 factory flashed Wi-Fi calibration data to be
+	  decompressed
+
 endif # MIKROTIK

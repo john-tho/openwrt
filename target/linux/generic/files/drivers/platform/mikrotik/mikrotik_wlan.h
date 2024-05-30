@@ -44,7 +44,7 @@ int mikrotik_wlan_lzor_prefixed_decompress(const u8 *inbuf, size_t inlen,
 int mikrotik_wlan_rle_decompress(const u8 *in, size_t inlen,
 				 u8 *out, size_t *outlen);
 
-#else
+#else /* CONFIG_MIKROTIK_WLAN_DECODE */
 
 static inline int mikrotik_wlan_lzor_prefixed_decompress(const u8 *inbuf,
 							 size_t inlen,
@@ -59,5 +59,35 @@ static inline int mikrotik_wlan_rle_decompress(const u8 *in, size_t inlen,
 {
 	return -EOPNOTSUPP;
 }
+
 #endif /* CONFIG_MIKROTIK_WLAN_DECOMPRESS */
+
+#ifdef CONFIG_MIKROTIK_WLAN_DECOMPRESS_LZ77
+/**
+ * mikrotik_wlan_lz77_decompress
+ *
+ * @in:			compressed data ptr
+ * @in_len:		length of compressed data
+ * @out:		buffer ptr to decompress into
+ * @out_len:		length of decompressed buffer in input,
+ *			length of decompressed data in success
+ *
+ * Returns 0 on success, or negative error
+ */
+int mikrotik_wlan_lz77_decompress(const unsigned char *in,
+				  size_t in_len,
+				  unsigned char *out,
+				  size_t *out_len);
+
+#else /* CONFIG_MIKROTIK_WLAN_DECOMPRESS_LZ77 */
+
+static inline int mikrotik_wlan_lz77_decompress(const unsigned char *in,
+						size_t in_len,
+						unsigned char *out,
+						size_t *out_len)
+{
+	return -EOPNOTSUPP;
+}
+
+#endif /* CONFIG_MIKROTIK_WLAN_DECOMPRESS_LZ77 */
 #endif /* __MIKROTIK_WLAN_H__ */
