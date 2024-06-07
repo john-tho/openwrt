@@ -5,9 +5,13 @@ define Device/mikrotik_nor
 	KERNEL_NAME := vmlinux
 	KERNEL := kernel-bin | append-dtb-elf
 	IMAGES = sysupgrade.bin
+	IMAGES += sysupgrade-v7.bin
 	IMAGE/sysupgrade.bin := append-kernel | kernel2minor -s 1024 | \
 		pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | \
 		check-size | append-metadata
+	IMAGE/sysupgrade-v7.bin := append-kernel | kernel-pack-npk | \
+		kernel2minor -b -s 1024 | pad-to $$$$(BLOCKSIZE) | \
+		append-rootfs | pad-rootfs | check-size | append-metadata
 endef
 
 define Device/mikrotik_nand
