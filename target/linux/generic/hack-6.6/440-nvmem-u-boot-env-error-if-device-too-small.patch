@@ -1,0 +1,45 @@
+From 3b269522e901adbe010e03b29fc583448746d70b Mon Sep 17 00:00:00 2001
+From: John Thomson <git@johnthomson.fastmail.com.au>
+Date: Tue, 11 Jun 2024 12:32:41 +1000
+Subject: [PATCH] nvmem: u-boot-env: error if device too small
+
+Using a Linux 6.6 kernel with a DTB description of u_boot,env within
+an MTD partition that is beyond the end of the hardware results in
+kernel panic in u_boot_env_parse.
+
+When mtdpart detects an out of reach partition, its size and offset
+are set to zero. Add a check in u-boot-env before running the crc32,
+that the data being processed is reachable. This situation should only
+ever be reached through hardware error or misconfiguration, but it is
+handled gracefully at the MTD level.
+
+Signed-off-by: John Thomson <git@johnthomson.fastmail.com.au>
+---
+RFC
+
+Only tested on OpenWrt's Linux 6.6 based kernel
+---
+ drivers/nvmem/u-boot-env.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/nvmem/u-boot-env.c b/drivers/nvmem/u-boot-env.c
+index befbab156cda..6e73d042467b 100644
+--- a/drivers/nvmem/u-boot-env.c
++++ b/drivers/nvmem/u-boot-env.c
+@@ -176,6 +176,13 @@ static int u_boot_env_parse(struct u_boot_env *priv)
+ 		data_offset = offsetof(struct u_boot_env_image_broadcom, data);
+ 		break;
+ 	}
++
++	if (bytes < crc32_data_offset) {
++		dev_err(dev, "Device too small for u-boot-env\n");
++		err = -EIO;
++		goto err_kfree;
++	}
++
+ 	crc32_addr = (__le32 *)(buf + crc32_offset);
+ 	crc32 = le32_to_cpu(*crc32_addr);
+ 	crc32_data_len = dev_size - crc32_data_offset;
+-- 
+2.45.1
+
