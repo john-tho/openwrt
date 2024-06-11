@@ -158,10 +158,10 @@
 			};
 
 			/* Empty space on NOR repurposed for U-Boot environment */
-			partition@fe0000 {
+			partition@100000 {
 				compatible = "u-boot,env";
 				label = "u-boot-env";
-				reg = <0xfe0000 0x20000>;
+				reg = <0x100000 0x20000>;
 			};
 		};
 	};

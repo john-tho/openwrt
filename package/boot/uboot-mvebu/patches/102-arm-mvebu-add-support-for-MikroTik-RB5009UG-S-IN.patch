@@ -143,10 +143,10 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 +			#size-cells = <1>;
 +
 +			/* Empty space on NOR repurposed for U-Boot environment */
-+			partition@fe0000 {
++			partition@100000 {
 +				compatible = "u-boot,env";
 +				label = "u-boot-env";
-+				reg = <0xfe0000 0x20000>;
++				reg = <0x100000 0x20000>;
 +			};
 +		};
 +	};
@@ -304,7 +304,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  	if (IS_ENABLED(CONFIG_ARMADA_3700))
 --- /dev/null
 +++ b/board/Marvell/mvebu_armada-8k/mikrotik-rb5009.env
-@@ -0,0 +1,52 @@
+@@ -0,0 +1,72 @@
 +openwrt_initramfs=openwrt-mvebu-cortexa72-mikrotik_rb5009-initramfs-uImage.itb
 +boot_devices=ubi usb net
 +recovery_boot_devices=usb net
@@ -339,24 +339,44 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 +		fi;
 +	done;
 +
++nor_of_node=/ap806/config-space@f0000000/spi@510600/flash@0
++
++fdt_move_u_boot=
++	fdt resize 0x1000;
++	fdt mknode ${nor_of_node}/partitions partition@100000;
++	fdt set ${nor_of_node}/partitions/partition@100000 reg <0x100000 0x20000>;
++	fdt set ${nor_of_node}/partitions/partition@100000 compatible "u-boot,env";
++	fdt set ${nor_of_node}/partitions/partition@100000 label "u-boot-env-early";
++	fdt rm ${nor_of_node}/partitions/partition@fe0000;
++	fdt rm ${nor_of_node}/partitions/partition@3e0000;
++
++bootm_moved_u_boot=
++	bootm start;
++	bootm loados;
++	bootm ramdisk;
++	bootm fdt;
++	run fdt_move_u_boot;
++	bootm cmdline;
++	bootm go;
++
 +ubiboot=
 +	echo Booting from NAND (UBI);
 +	ubi part ubi;
 +	setenv loadimagecmd ${ubiloadimage};
 +	ubi read ${loadaddr} kernel;
-+	bootm ${loadaddr};
++	run bootm_moved_u_boot;
 +
 +usbboot=
 +	echo Booting from USB Storage;
 +	usb start;
 +	load usb 0:1 ${loadaddr} ${openwrt_initramfs};
-+	bootm ${loadaddr};
++	run bootm_moved_u_boot;
 +
 +netboot=
 +	echo Booting from Network;
 +	dhcp;
 +	tftpboot ${loadaddr} ${openwrt_initramfs};
-+	bootm ${loadaddr};
++	run bootm_moved_u_boot;
 --- /dev/null
 +++ b/configs/mvebu_rb5009_defconfig
 @@ -0,0 +1,97 @@
@@ -370,7 +390,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
 +CONFIG_CUSTOM_SYS_INIT_SP_ADDR=0xff0000
 +CONFIG_TARGET_MVEBU_ARMADA_8K=y
 +CONFIG_ENV_SIZE=0x20000
-+CONFIG_ENV_OFFSET=0xfe0000
++CONFIG_ENV_OFFSET=0x100000
 +CONFIG_ENV_SECT_SIZE=0x10000
 +CONFIG_DM_GPIO=y
 +CONFIG_DEFAULT_DEVICE_TREE="armada-7040-rb5009"
