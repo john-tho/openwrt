@@ -189,6 +189,7 @@
 		port@0 {
 			status = "okay";
 			label = "eth0";
+			disable-kernel-ifname;
 		};
 
 		port@1 {
