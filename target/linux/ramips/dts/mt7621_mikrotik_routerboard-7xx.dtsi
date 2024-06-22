@@ -52,16 +52,18 @@
 
 		port@1 {
 			status = "okay";
-			label = "lan2";
+			label = "eth0";
 			nvmem-cells = <&macaddr_base 1>;
 			nvmem-cell-names = "mac-address";
+			disable-kernel-ifname;
 		};
 
 		port@2 {
 			status = "okay";
-			label = "lan3";
+			label = "eth1";
 			nvmem-cells = <&macaddr_base 2>;
 			nvmem-cell-names = "mac-address";
+			disable-kernel-ifname;
 		};
 
 		port@3 {
