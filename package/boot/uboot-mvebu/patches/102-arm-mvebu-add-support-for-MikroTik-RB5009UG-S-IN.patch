@@ -304,7 +304,8 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
  	if (IS_ENABLED(CONFIG_ARMADA_3700))
 --- /dev/null
 +++ b/board/Marvell/mvebu_armada-8k/mikrotik-rb5009.env
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,73 @@
++ethaddr=2e:c8:1b:00:00:00
 +openwrt_initramfs=openwrt-mvebu-cortexa72-mikrotik_rb5009-initramfs-uImage.itb
 +boot_devices=ubi usb net
 +recovery_boot_devices=usb net
