@@ -1,6 +1,7 @@
 --- /dev/null
 +++ b/board/Marvell/mvebu_armada-8k/mikrotik-rb5009-netboot.env
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,73 @@
++ethaddr=2e:c8:1b:00:00:00
 +openwrt_initramfs=openwrt-mvebu-cortexa72-mikrotik_rb5009-initramfs-uImage.itb
 +boot_devices=usb net ubi
 +recovery_boot_devices=usb net
