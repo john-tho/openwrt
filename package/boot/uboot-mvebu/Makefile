@@ -68,6 +68,12 @@ define U-Boot/rb5009
   UBOOT_IMAGE:=u-boot.elf
 endef
 
+define U-Boot/rb5009-netboot
+  $(call U-Boot/rb5009)
+  NAME:=MikroTik RB5009 netboot
+  UBOOT_CONFIG:=mvebu_rb5009_netboot
+endef
+
 UBOOT_TARGETS:= \
 	clearfog \
 	helios4 \
@@ -75,7 +81,8 @@ UBOOT_TARGETS:= \
 	espressobin \
 	uDPU \
 	eDPU \
-	rb5009
+	rb5009 \
+	rb5009-netboot
 
 define Package/u-boot/install
 	$(if $(findstring cortexa53,$(BUILD_SUBTARGET)),,$(Package/u-boot/install/default))

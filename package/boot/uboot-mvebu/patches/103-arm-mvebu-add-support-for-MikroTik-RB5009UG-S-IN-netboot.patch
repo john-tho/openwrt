@@ -1,0 +1,175 @@
+--- /dev/null
++++ b/board/Marvell/mvebu_armada-8k/mikrotik-rb5009-netboot.env
+@@ -0,0 +1,72 @@
++openwrt_initramfs=openwrt-mvebu-cortexa72-mikrotik_rb5009-initramfs-uImage.itb
++boot_devices=usb net ubi
++recovery_boot_devices=usb net
++
++button_cmd_0_name=reset
++button_cmd_0=run recovery_bootcmd
++
++recovery_bootcmd=
++	led green:sfp on;
++	led blue:hdr1 on;
++	led blue:hdr2 on;
++
++	for b in ${recovery_boot_devices}; do
++		if test ${b} = usb; then
++			run usbboot;
++		fi;
++		if test ${b} = net; then
++			run netboot;
++		fi;
++	done;
++
++bootcmd=
++	for b in ${boot_devices}; do
++		if test ${b} = ubi; then
++			run ubiboot;
++		fi;
++		if test ${b} = usb; then
++			run usbboot;
++		fi;
++		if test ${b} = net; then
++			run netboot;
++		fi;
++	done;
++
++nor_of_node=/ap806/config-space@f0000000/spi@510600/flash@0
++
++fdt_move_u_boot=
++	fdt resize 0x1000;
++	fdt mknode ${nor_of_node}/partitions partition@100000;
++	fdt set ${nor_of_node}/partitions/partition@100000 reg <0x100000 0x20000>;
++	fdt set ${nor_of_node}/partitions/partition@100000 compatible "u-boot,env";
++	fdt set ${nor_of_node}/partitions/partition@100000 label "u-boot-env-early";
++	fdt rm ${nor_of_node}/partitions/partition@fe0000;
++	fdt rm ${nor_of_node}/partitions/partition@3e0000;
++
++bootm_moved_u_boot=
++	bootm start;
++	bootm loados;
++	bootm ramdisk;
++	bootm fdt;
++	run fdt_move_u_boot;
++	bootm cmdline;
++	bootm go;
++
++ubiboot=
++	echo Booting from NAND (UBI);
++	ubi part ubi;
++	setenv loadimagecmd ${ubiloadimage};
++	ubi read ${loadaddr} kernel;
++	run bootm_moved_u_boot;
++
++usbboot=
++	echo Booting from USB Storage;
++	usb start;
++	load usb 0:1 ${loadaddr} ${openwrt_initramfs};
++	run bootm_moved_u_boot;
++
++netboot=
++	echo Booting from Network;
++	dhcp;
++	tftpboot ${loadaddr} ${openwrt_initramfs};
++	run bootm_moved_u_boot;
+--- /dev/null
++++ b/configs/mvebu_rb5009_netboot_defconfig
+@@ -0,0 +1,97 @@
++CONFIG_ARM=y
++CONFIG_ARCH_CPU_INIT=y
++CONFIG_ARCH_MVEBU=y
++CONFIG_TEXT_BASE=0x0
++CONFIG_NR_DRAM_BANKS=2
++CONFIG_ENV_SOURCE_FILE="mikrotik-rb5009-netboot"
++CONFIG_HAS_CUSTOM_SYS_INIT_SP_ADDR=y
++CONFIG_CUSTOM_SYS_INIT_SP_ADDR=0xff0000
++CONFIG_TARGET_MVEBU_ARMADA_8K=y
++CONFIG_ENV_SIZE=0x20000
++CONFIG_ENV_OFFSET=0x100000
++CONFIG_ENV_SECT_SIZE=0x10000
++CONFIG_DM_GPIO=y
++CONFIG_DEFAULT_DEVICE_TREE="armada-7040-rb5009"
++CONFIG_DEBUG_UART_BASE=0xf0512000
++CONFIG_DEBUG_UART_CLOCK=200000000
++CONFIG_SYS_LOAD_ADDR=0x800000
++CONFIG_DEBUG_UART=y
++# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
++CONFIG_REMAKE_ELF=y
++CONFIG_BUTTON_CMD=y
++CONFIG_FIT=y
++CONFIG_FIT_VERBOSE=y
++# CONFIG_BOOTSTD is not set
++CONFIG_SUPPORT_RAW_INITRD=y
++CONFIG_BOOTDELAY=5
++CONFIG_SYS_CONSOLE_INFO_QUIET=y
++CONFIG_LOG=y
++CONFIG_LOG_ERROR_RETURN=y
++# CONFIG_DISPLAY_CPUINFO is not set
++# CONFIG_DISPLAY_BOARDINFO is not set
++CONFIG_DISPLAY_BOARDINFO_LATE=y
++CONFIG_BOARD_EARLY_INIT_F=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_MTD=y
++CONFIG_CMD_PART=y
++CONFIG_CMD_PCI=y
++CONFIG_CMD_SPI=y
++CONFIG_CMD_USB=y
++# CONFIG_CMD_SETEXPR is not set
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_TFTPPUT=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_PXE=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_TIME=y
++CONFIG_CMD_SYSBOOT=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_CMD_UBI=y
++CONFIG_EFI_PARTITION=y
++CONFIG_ENV_OVERWRITE=y
++CONFIG_ENV_IS_IN_SPI_FLASH=y
++CONFIG_SYS_RELOC_GD_ENV_ADDR=y
++CONFIG_NET_RANDOM_ETHADDR=y
++CONFIG_BUTTON=y
++CONFIG_BUTTON_GPIO=y
++CONFIG_GPIO_HOG=y
++CONFIG_DM_I2C=y
++CONFIG_SYS_I2C_MVTWSI=y
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
++CONFIG_MISC=y
++CONFIG_MTD_RAW_NAND=y
++CONFIG_SYS_NAND_USE_FLASH_BBT=y
++CONFIG_NAND_PXA3XX=y
++CONFIG_SYS_NAND_ONFI_DETECTION=y
++CONFIG_SPI_FLASH_SFDP_SUPPORT=y
++CONFIG_SPI_FLASH_WINBOND=y
++# CONFIG_SPI_FLASH_USE_4K_SECTORS is not set
++CONFIG_SPI_FLASH_MTD=y
++CONFIG_PHY_MARVELL=y
++CONFIG_PHY_GIGE=y
++CONFIG_MVPP2=y
++CONFIG_PHY=y
++CONFIG_MVEBU_COMPHY_SUPPORT=y
++CONFIG_PINCTRL=y
++CONFIG_PINCTRL_ARMADA_8K=y
++CONFIG_DEBUG_UART_SHIFT=2
++CONFIG_DEBUG_UART_ANNOUNCE=y
++CONFIG_SYS_NS16550=y
++CONFIG_KIRKWOOD_SPI=y
++CONFIG_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_STORAGE=y
++CONFIG_USB_HOST_ETHER=y
++CONFIG_USB_ETHER_RTL8152=y
++CONFIG_YAFFS2=y
++# CONFIG_SHA256 is not set
++# CONFIG_EFI_LOADER is not set
