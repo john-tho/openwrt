@@ -22,11 +22,9 @@ Only tested on OpenWrt's Linux 6.6 based kernel
  drivers/nvmem/u-boot-env.c | 7 +++++++
  1 file changed, 7 insertions(+)
 
-diff --git a/drivers/nvmem/u-boot-env.c b/drivers/nvmem/u-boot-env.c
-index befbab156cda..6e73d042467b 100644
 --- a/drivers/nvmem/u-boot-env.c
 +++ b/drivers/nvmem/u-boot-env.c
-@@ -176,6 +176,13 @@ static int u_boot_env_parse(struct u_boot_env *priv)
+@@ -176,6 +176,13 @@ static int u_boot_env_parse(struct u_boo
  		data_offset = offsetof(struct u_boot_env_image_broadcom, data);
  		break;
  	}
@@ -40,6 +38,3 @@ index befbab156cda..6e73d042467b 100644
  	crc32_addr = (__le32 *)(buf + crc32_offset);
  	crc32 = le32_to_cpu(*crc32_addr);
  	crc32_data_len = dev_size - crc32_data_offset;
--- 
-2.45.1
-
