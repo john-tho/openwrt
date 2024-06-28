@@ -18,7 +18,7 @@ Link: https://lore.kernel.org/linux-mtd/20230927202657.27169-1-zajec5@gmail.com
 
 --- a/drivers/mtd/mtdpart.c
 +++ b/drivers/mtd/mtdpart.c
-@@ -425,7 +425,11 @@ int add_mtd_partitions(struct mtd_info *
+@@ -426,7 +426,11 @@ int add_mtd_partitions(struct mtd_info *
  		mtd_add_partition_attrs(child);
  
  		/* Look for subpartitions */
