@@ -1,0 +1,38 @@
+From 17f4431de19b107a32933ccbe8b434c6b527e4cd Mon Sep 17 00:00:00 2001
+From: John Thomson <git@johnthomson.fastmail.com.au>
+Date: Wed, 10 Jul 2024 15:39:07 +1000
+Subject: [PATCH] mips: compressed: add ralink debug
+
+Signed-off-by: John Thomson <git@johnthomson.fastmail.com.au>
+---
+ arch/mips/boot/compressed/Makefile      | 1 +
+ arch/mips/boot/compressed/uart-ralink.c | 2 ++
+ 2 files changed, 3 insertions(+)
+ create mode 100644 arch/mips/boot/compressed/uart-ralink.c
+
+--- a/arch/mips/boot/compressed/Makefile
++++ b/arch/mips/boot/compressed/Makefile
+@@ -49,6 +49,7 @@ vmlinuzobjs-$(CONFIG_SYS_SUPPORTS_ZBOOT_
+ vmlinuzobjs-$(CONFIG_SYS_SUPPORTS_ZBOOT_UART_PROM) += $(obj)/uart-prom.o
+ vmlinuzobjs-$(CONFIG_MIPS_ALCHEMY)		   += $(obj)/uart-alchemy.o
+ vmlinuzobjs-$(CONFIG_ATH79)			   += $(obj)/uart-ath79.o
++vmlinuzobjs-$(CONFIG_RALINK)			   += $(obj)/uart-ralink.o
+ endif
+ 
+ vmlinuzobjs-$(CONFIG_KERNEL_XZ) += $(obj)/ashldi3.o
+--- /dev/null
++++ b/arch/mips/boot/compressed/uart-ralink.c
+@@ -0,0 +1,2 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include "../../ralink/early_printk.c"
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -613,7 +613,7 @@ config RALINK
+ 	select SYS_SUPPORTS_32BIT_KERNEL
+ 	select SYS_SUPPORTS_LITTLE_ENDIAN
+ 	select SYS_SUPPORTS_MIPS16
+-	select SYS_SUPPORTS_ZBOOT
++	select SYS_SUPPORTS_ZBOOT_UART_PROM
+ 	select SYS_HAS_EARLY_PRINTK
+ 	select ARCH_HAS_RESET_CONTROLLER
+ 	select RESET_CONTROLLER
