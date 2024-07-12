@@ -4,7 +4,7 @@
 
 SUBTARGET:=mt7621
 BOARDNAME:=MT7621 based boards
-FEATURES+=nand ramdisk rtc usb minor
+FEATURES+=nand ramdisk rtc usb minor separate_ramdisk
 CPU_TYPE:=24kc
 KERNELNAME:=vmlinux vmlinuz
 # make Kernel/CopyImage use $LINUX_DIR/vmlinuz
