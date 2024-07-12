@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 
 #include "qca9558_mikrotik_routerboard-96x.dtsi"
+#include "dt-bindings/leds/common.h"
 
 / {
 	compatible = "mikrotik,routerboard-962uigs-5hact2hnt", "qca,qca9558";
@@ -30,8 +31,49 @@
 	status = "okay";
 
 	qca,no-eeprom;
+	nvmem-cells = <&macaddr_base 7>;
+	nvmem-cell-names = "mac-address";
 };
 
 &pcie1 {
 	status = "okay";
+
+	ath10k: wifi@0,0 {
+		/* qca988x */
+		compatible = "pci168c,003c";
+		reg = <0x0000 0 0 0 0>;
+
+		gpio-controller;
+		#gpio-cells = <2>;
+
+		/* ath10k only has support for LED on a specific pin */
+		/* (pin1 for this device), only that LED can be controlled. */
+		/*
+		leds {
+			#address=cells = <1>;
+			#size-cells = <0>;
+
+			led@0 {
+				reg = <0>;
+				color = <LED_COLOR_ID_BLUE>;
+				function = <LED_FUNCTION_POWER>;
+				linux,default-trigger = "default-on";
+			};
+
+			led@1 {
+				reg = <1>;
+				color = <LED_COLOR_ID_GREEN>;
+				function = <LED_FUNCTION_WLAN_2GHZ>;
+				linux,default-trigger = "phy1tpt";
+			};
+
+			led@2 {
+				reg = <2>;
+				color = <LED_COLOR_ID_RED>;
+				function = <LED_FUNCTION_WLAN_5GHZ>;
+				linux,default-trigger = "phy0tpt";
+			};
+		};
+		*/
+	};
 };
