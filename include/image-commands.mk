@@ -23,6 +23,11 @@ define Build/append-dtb-elf
 		.appended_dtb=$(KDIR)/image-$(firstword $(DEVICE_DTS)).dtb $@
 endef
 
+define Build/append-initrd-elf
+	$(TARGET_CROSS)objcopy \
+		--add-section initrd=$(KERNEL_BUILD_DIR)/initrd.cpio$(strip $(call Build/initrd_compression)) $@
+endef
+
 define Build/append-kernel
 	dd if=$(IMAGE_KERNEL) >> $@
 endef

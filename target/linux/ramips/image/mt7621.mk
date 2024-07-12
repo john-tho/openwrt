@@ -2154,8 +2154,9 @@ define Device/MikroTik
   KERNEL_NAME := vmlinuz
   KERNEL := kernel-bin | append-dtb-elf
   LOADER_TYPE := elf
-  KERNEL_INITRAMFS_NAME := vmlinux-initramfs
-  KERNEL_INITRAMFS := $(KERNEL_DTB) | loader-kernel
+  #KERNEL_INITRAMFS_NAME := vmlinux-initramfs
+  #KERNEL_INITRAMFS := $(KERNEL_DTB) | loader-kernel
+  KERNEL_INITRAMFS := kernel-bin | append-dtb-elf | append-initrd-elf
   IMAGE/sysupgrade.bin := append-kernel | yaffs-filesystem -L | \
 	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | check-size | \
 	append-metadata
