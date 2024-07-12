@@ -89,6 +89,9 @@ ath79_setup_macs()
 		lan_mac="$mac_base"
 		wan_mac=$(macaddr_add $mac_base 1)
 		;;
+	mikrotik,routerboard-962uigs-5hact2hnt)
+		:
+		;;
 	*)
 		label_mac="$mac_base"
 		wan_mac="$mac_base"

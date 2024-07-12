@@ -12,6 +12,7 @@
 		led-boot = &led_user;
 		led-failsafe = &led_user;
 		led-upgrade = &led_user;
+		label-mac-device = &eth0;
 	};
 
 	chosen {
@@ -105,6 +106,15 @@
 
 				hard_config {
 					read-only;
+
+
+					nvmem-layout {
+						compatible = "mikrotik,routerboot-nvmem";
+
+						macaddr_base: base-mac-address {
+							#nvmem-cell-cells = <1>;
+						};
+					};
 				};
 
 				bios {
@@ -176,6 +186,9 @@
 	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_MDIO>;
 	clock-names = "eth", "mdio";
 
+	nvmem-cells = <&macaddr_base 0>;
+	nvmem-cell-names = "mac-address";
+
 	gmac-config {
 		device = <&gmac>;
 		rgmii-enabled = <1>;
@@ -202,6 +215,9 @@
 
 	clocks = <&pll ATH79_CLK_AHB>, <&pll ATH79_CLK_MDIO>;
 	clock-names = "eth", "mdio";
+
+	nvmem-cells = <&macaddr_base 5>;
+	nvmem-cell-names = "mac-address";
 
 	gmac-config {
 		device = <&gmac>;
