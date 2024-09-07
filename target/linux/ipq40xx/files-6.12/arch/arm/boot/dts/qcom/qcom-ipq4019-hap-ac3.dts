@@ -150,6 +150,21 @@
 			gpios = <&tlmm 36 GPIO_ACTIVE_HIGH>;
 		};
 	};
+
+	reg_usb: regulator-usb-supply {
+		compatible = "regulator-fixed";
+		regulator-name = "usb-supply";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		enable-active-high;
+		regulator-boot-on;
+		gpio = <&tlmm 44 GPIO_ACTIVE_HIGH>;
+	};
+
+	output-usb-power {
+		compatible = "regulator-output";
+		vout-supply = <&reg_usb>;
+	};
 };
 
 &watchdog {
@@ -204,13 +219,6 @@
 			function = "qpic";
 			bias-pull-down;
 		};
-	};
-
-	enable-usb-power {
-		gpio-hog;
-		gpios = <44 GPIO_ACTIVE_HIGH>;
-		output-high;
-		line-name = "enable USB power";
 	};
 };
 
