@@ -61,7 +61,6 @@
 				partition@30000 {
 					label = "bootloader2";
 					reg = <0x30000 0xd000>;
-					read-only;
 				};
 
 				partition@3d000 {
