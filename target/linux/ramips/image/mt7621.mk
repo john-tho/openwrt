@@ -2000,9 +2000,16 @@ define Device/MikroTik
   DEVICE_PACKAGES := kmod-usb3 -uboot-envtools
   KERNEL_NAME := vmlinuz
   KERNEL := kernel-bin | append-dtb-elf
+  LOADER_TYPE := elf
+  KERNEL_INITRAMFS_NAME := vmlinux-initramfs
+  KERNEL_INITRAMFS := $(KERNEL_DTB) | loader-kernel
   IMAGE/sysupgrade.bin := append-kernel | yaffs-filesystem -L | \
 	pad-to $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs | check-size | \
 	append-metadata
+  IMAGES += sysupgrade-v7.bin
+  IMAGE/sysupgrade-v7.bin := append-kernel | kernel-pack-npk | \
+	  yaffs-filesystem -L | pad-to $$$$(BLOCKSIZE) | \
+	  append-rootfs | pad-rootfs | check-size | append-metadata
 endef
 
 define Device/mikrotik_ltap-2hnd

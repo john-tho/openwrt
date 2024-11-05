@@ -86,6 +86,7 @@ tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(CONFIG_USES_MINOR),y) += yafut
 tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(CONFIG_USE_SPARSE),y) += sparse
 tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(CONFIG_USE_LLVM_BUILD),y) += llvm-bpf
 tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(CONFIG_USE_MOLD),y) += mold
+tools-$(if $(CONFIG_BUILD_ALL_HOST_TOOLS)$(CONFIG_USES_MINOR),y) += npkpy
 
 # builddir dependencies
 $(curdir)/autoconf/compile := $(curdir)/m4/compile
